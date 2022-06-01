@@ -129,7 +129,7 @@ const Crud = () => {
     const productService = new ProductService();
 
     productService.deleteFood(product.ID);
-    let _products = products.filter((val) => val.id !== product.id);
+    let _products = products.filter((val) => val.id !== product.ID);
     setProducts(_products);
     setDeleteProductDialog(false);
     setProduct(emptyFood);

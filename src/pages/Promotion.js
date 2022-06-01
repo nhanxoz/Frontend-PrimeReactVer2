@@ -12,141 +12,148 @@ import { RadioButton } from "primereact/radiobutton";
 import { InputNumber } from "primereact/inputnumber";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { FoodCategoryService } from "../service/FoodCategoryService";
+import { PromotionService } from "../service/PromotionService";
+import { ProductService } from "../service/ProductService";
 
-const EmptyPage = () => {
-  let emptyFoodCategory = {
+const Promotion = () => {
+  let emptyPromotion = {
     ID: null,
     Name: "",
-    Alias: null,
-    CreatedDate: null,
-    CreatedBy: null,
-    UpdateDate: null,
-    UpdateBy: null,
-    Status:null
+    Description: "",
+    ActiveDay: null,
+    EndDay:null,
+    FoodID: null
   };
-  //const [orders, setFoodCategorys] = useState([]);
-  const [orders, setFoodCategorys] = useState(null);
-  const [orderDialog, setFoodCategoryDialog] = useState(false);
-  const [deleteFoodCategoryDialog, setDeleteFoodCategoryDialog] = useState(false);
-  const [deleteFoodCategorysDialog, setDeleteFoodCategorysDialog] = useState(false);
-  const [order, setFoodCategory] = useState(emptyFoodCategory);
-  const [selectedFoodCategorys, setSelectedFoodCategorys] = useState(null);
+ 
+  const [promotions, setPromotions] = useState(null);
+  const [promotionDialog, setPromotionDialog] = useState(false);
+  const [deletePromotionDialog, setDeletePromotionDialog] = useState(false);
+  const [deletePromotionsDialog, setDeletePromotionsDialog] = useState(false);
+  const [promotion, setPromotion] = useState(emptyPromotion);
+  const [selectedPromotions, setSelectedPromotions] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState(null);
   const [uri, setUri] = useState(null);
+  const [products, setProducts] = useState(null);
   const toast = useRef(null);
   const dt = useRef(null);
 
   useEffect(() => {
-    const foodCategoryService = new FoodCategoryService();
-    foodCategoryService.getFoodCategory().then((data) => {
-      setFoodCategorys(data);
+    const promotionService = new PromotionService();
+    promotionService.getPromotion().then((data) => {
+      setPromotions(data);
+    const productService = new ProductService();
+    productService.getFoods().then((data) => {
+      setProducts(data.map((i, k) => i.Name));
+      });
     });
 
     
   }, []);
 
   const formatCurrency = (value) => {
-    if(value == 1) return String(
-    "Còn món",
-    );
-    return String(
-      "Hết món",
-      );
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
   };
-
+  const ListProduct = ()=>{
+    const productService = new ProductService();
+    productService.getFoods().then((data) => {
+      setProducts(data);
+    });
+  }
   const openNew = () => {
-    setFoodCategory(emptyFoodCategory);
+    setPromotion(emptyPromotion);
     setSubmitted(false);
-    setFoodCategoryDialog(true);
+    setPromotionDialog(true);
   };
 
   const hideDialog = () => {
     setSubmitted(false);
-    setFoodCategoryDialog(false);
+    setPromotionDialog(false);
   };
 
-  const hideDeleteFoodCategoryDialog = () => {
-    setDeleteFoodCategoryDialog(false);
+  const hideDeletePromotionDialog = () => {
+    setDeletePromotionDialog(false);
   };
 
-  const hideDeleteFoodCategorysDialog = () => {
-    setDeleteFoodCategorysDialog(false);
+  const hideDeletePromotionsDialog = () => {
+    setDeletePromotionsDialog(false);
   };
 
-  const saveFoodCategory = () => {
+  const savePromotion = () => {
     setSubmitted(true);
 
-    if (order.Name.trim()) {
-      let _orders = [...orders];
-      let _order = { ...order };
-      if (order.FoodCategoryID) {
-        const index = findIndexById(order.FoodCategoryID);
+    if (promotion.Name.trim()) {
+      let _promotions = [...promotions];
+      let _promotion = { ...promotion };
+      if (promotion.ID) {
+        const index = findIndexById(promotion.ID);
 
-        _orders[index] = _order;
-        const foodCategoryService = new FoodCategoryService();
-        foodCategoryService.saveFoodCategory(_order);
+        _promotions[index] = _promotion;
+        const promotionService = new PromotionService();
+        promotionService.saveFood(_promotion);
         toast.current.show({
           severity: "success",
           summary: "Successful",
-          detail: "order Updated",
+          detail: "Promotion Updated",
           life: 3000,
         });
       } else {
-        _order.ID = 1;
+        _promotion.ID = 1;
 
-        _order.Image = uri;
-        _orders.push(_order);
-        const foodCategoryService = new FoodCategoryService();
-        foodCategoryService.saveFoodCategory(_order);
+        _promotion.Image = uri;
+        _promotions.push(_promotion);
+        const promotionService = new PromotionService();
+        promotionService.saveFood(_promotion);
         toast.current.show({
           severity: "success",
           summary: "Successful",
-          detail: "order Created",
+          detail: "Promotion Created",
           life: 3000,
         });
       }
 
-      setFoodCategorys(_orders);
-      setFoodCategoryDialog(false);
-      setFoodCategory(emptyFoodCategory);
-      console.log(_orders);
+      setPromotions(_promotions);
+      setPromotionDialog(false);
+      setPromotion(emptyPromotion);
+      console.log(_promotions);
     }
   };
 
-  const editFoodCategory = (order) => {
-    setFoodCategory({ ...order });
-    setFoodCategoryDialog(true);
+  const editPromotion = (promotion) => {
+    setPromotion({ ...promotion });
+    setPromotionDialog(true);
   };
 
-  const confirmDeleteFoodCategory = (order) => {
-    setFoodCategory(order);
+  const confirmDeletePromotion = (promotion) => {
+    setPromotion(promotion);
 
-    setDeleteFoodCategoryDialog(true);
+    setDeletePromotionDialog(true);
   };
 
-  const deleteFoodCategory = () => {
-    const foodCategoryService = new FoodCategoryService();
+  const deletePromotion = () => {
+    const promotionService = new PromotionService();
 
-    foodCategoryService.deleteFoodCategory(order.FoodCategoryID);
-    let _orders = orders.filter((val) => val.id !== order.id);
-    setFoodCategorys(_orders);
-    setDeleteFoodCategoryDialog(false);
-    setFoodCategory(emptyFoodCategory);
+    promotionService.deletePromotion(promotion.ID);
+    let _promotions = promotions.filter((val) => val.id !== promotion.id);
+    setPromotions(_promotions);
+    setDeletePromotionDialog(false);
+    setPromotion(emptyPromotion);
 
     toast.current.show({
       severity: "success",
       summary: "Successful",
-      detail: "order Deleted",
+      detail: "Promotion Deleted",
       life: 3000,
     });
   };
 
   const findIndexById = (id) => {
     let index = -1;
-    for (let i = 0; i < orders.length; i++) {
-      if (orders[i].FoodCategoryID === id) {
+    for (let i = 0; i < promotions.length; i++) {
+      if (promotions[i].ID === id) {
         index = i;
         break;
       }
@@ -170,53 +177,57 @@ const EmptyPage = () => {
   };
 
   const confirmDeleteSelected = () => {
-    setDeleteFoodCategorysDialog(true);
+    setDeletePromotionsDialog(true);
   };
 
-  const deleteSelectedFoodCategorys = () => {
-    console.log(selectedFoodCategorys);
-    const foodCategoryService = new FoodCategoryService();
-    for (var i in selectedFoodCategorys) {
-      foodCategoryService.deleteFood(selectedFoodCategorys[i].ID);
+  const deleteSelectedPromotions = () => {
+    console.log(selectedPromotions);
+    const promotionService = new PromotionService();
+    for (var i in selectedPromotions) {
+      promotionService.deleteFood(selectedPromotions[i].ID);
     }
 
-    let _orders = orders.filter((val) => !selectedFoodCategorys.includes(val));
-    setFoodCategorys(_orders);
+    let _promotions = promotions.filter((val) => !selectedPromotions.includes(val));
+    setPromotions(_promotions);
 
-    setDeleteFoodCategorysDialog(false);
-    setSelectedFoodCategorys(null);
+    setDeletePromotionsDialog(false);
+    setSelectedPromotions(null);
     toast.current.show({
       severity: "success",
       summary: "Successful",
-      detail: "FoodCategorys Deleted",
+      detail: "Promotions Deleted",
       life: 3000,
     });
   };
 
-  
+  const onCategoryChange = (e) => {
+    let _promotion = { ...promotion };
+    _promotion["CategoryID"] = e.value;
+    setPromotion(_promotion);
+  };
 
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || "";
-    let _order = { ...order };
-    _order[`${name}`] = val;
+    let _promotion = { ...promotion };
+    _promotion[`${name}`] = val;
 
-    setFoodCategory(_order);
+    setPromotion(_promotion);
   };
 
   const chooseOptions = { label: "Choose", icon: "pi pi-fw pi-plus" };
   const myUploader = (file) => {
-    const foodCategoryService = new FoodCategoryService();
+    const promotionService = new PromotionService();
 
-    foodCategoryService
-      .uploadImageFoodCategory(file.files[0])
+    promotionService
+      .uploadImagePromotion(file.files[0])
       .then((data) => setUri(data));
   };
   const onInputNumberChange = (e, name) => {
     const val = e.value || 0;
-    let _order = { ...order };
-    _order[`${name}`] = val;
+    let _promotion = { ...promotion };
+    _promotion[`${name}`] = val;
 
-    setFoodCategory(_order);
+    setPromotion(_promotion);
   };
 
   const leftToolbarTemplate = () => {
@@ -229,7 +240,13 @@ const EmptyPage = () => {
             className="p-button-success mr-2"
             onClick={openNew}
           />
-          
+          <Button
+            label="Xóa"
+            icon="pi pi-trash"
+            className="p-button-danger"
+            onClick={confirmDeleteSelected}
+            disabled={!selectedPromotions || !selectedPromotions.length}
+          />
         </div>
       </React.Fragment>
     );
@@ -256,93 +273,88 @@ const EmptyPage = () => {
     );
   };
   
-  
-  const FoodCategoryIDBodyTemplate = (rowData) => {
+
+  const renderCategoriesRadioButton = () => {
     return (
       <>
-        <span className="p-column-title">Mã danh mục</span>
+        <label className="mb-3">List Food Apply</label>
+        <div className="formgrid grid">{ListProduct}</div>
+      </>
+    );
+  };
+  const IDBodyTemplate = (rowData) => {
+    return (
+      <>
+        <span className="p-column-title">ID</span>
         {rowData.ID}
       </>
     );
   };
 
-  const NameBodyTemplate = (rowData) => {
+  const nameBodyTemplate = (rowData) => {
     return (
       <>
-        <span className="p-column-title">Tên danh mục</span>
+        <span className="p-column-title">Name</span>
         {rowData.Name}
       </>
     );
   };
 
-  const CreatedDateBodyTemplate = (rowData) => {
+  const imageBodyTemplate = (rowData) => {
     return (
       <>
-        <span className="p-column-title">Ngày tạo</span>
-        {rowData.CreatedDate}
-        
-      </>
-    );
-  };
+        <span className="p-column-title">Image</span>
 
-  const CreateByBodyTemplate = (rowData) => {
-    return (
-      <>
-        <span className="p-column-title">Người tạo</span>
-        {rowData.CreatedBy}
-      </>
-    );
-  };
-  const UpdateDateBodyTemplate = (rowData) => {
-    return (
-      <>
-        <span className="p-column-title">Ngày cập nhật</span>
-        {rowData.UpdateDate}
-      </>
-    );};
-    const UpdateByBodyTemplate = (rowData) => {
-      return (
-        <>
-          <span className="p-column-title">Ngày cập nhật</span>
-          {rowData.UpdateBy}
-        </>
-      );};
-      const StatusBodyTemplate = (rowData) => {
-        return (
-          <>
-            <span className="p-column-title">Ngày cập nhật</span>
-            {formatCurrency(rowData.Status)}
-          </>
-        );
-  };
-
-  const ImageBodyTemplate = (rowData) => {
-    return (
-      <>
-        <span className="p-column-title">Hình ảnh</span>
         <img
-          src={`http://localhost:1486/Content/food/` + rowData.Alias + `_1.jpg`}
-          alt={rowData.Image}
+          src={`http://localhost:1486/Content/food/` + rowData.Alias + `.jpg`}
+          alt={rowData.image}
           className="shadow-2"
           width="100"
         />
       </>
     );
   };
-  
-  
+
+  const descriptionBodyTemplate = (rowData) => {
+    return (
+      <>
+        <span className="p-column-title">Mô tả</span>
+        {rowData.Description}
+      </>
+    );
+  };
+
+  const activedayBodyTemplate = (rowData) => {
+    return (
+      <>
+        <span className="p-column-title">Ngày bắt đầu</span>
+          {rowData.Activeday}
+      </>
+    );
+  };
+  const enddayBodyTemplate = (rowData) => {
+    return (
+      <>
+        <span className="p-column-title">Ngày kết thúc</span>
+        <span>
+          {rowData.EndDay}
+        </span>
+      </>
+    );
+  };
+
   const actionBodyTemplate = (rowData) => {
     return (
       <div className="actions">
         <Button
           icon="pi pi-pencil"
           className="p-button-rounded p-button-success mr-2"
-          onClick={() => editFoodCategory(rowData)}
+          onClick={() => editPromotion(rowData)}
         />
         <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-warning mt-2"
-          onClick={() => confirmDeleteFoodCategory(rowData)}
+          onClick={() => confirmDeletePromotion(rowData)}
         />
       </div>
     );
@@ -350,7 +362,7 @@ const EmptyPage = () => {
 
   const header = (
     <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-      <h5 className="m-0">Danh mục món ăn</h5>
+      <h5 className="m-0">Danh sách Mã giảm giá</h5>
       <span className="block mt-2 md:mt-0 p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -362,7 +374,7 @@ const EmptyPage = () => {
     </div>
   );
 
-  const categoryDialogFooter = (
+  const promotionDialogFooter = (
     <>
       <Button
         label="Cancel"
@@ -374,39 +386,39 @@ const EmptyPage = () => {
         label="Save"
         icon="pi pi-check"
         className="p-button-text"
-        onClick={saveFoodCategory}
+        onClick={savePromotion}
       />
     </>
   );
-  const deleteFoodCategoryDialogFooter = (
+  const deletePromotionDialogFooter = (
     <>
       <Button
         label="No"
         icon="pi pi-times"
         className="p-button-text"
-        onClick={hideDeleteFoodCategoryDialog}
+        onClick={hideDeletePromotionDialog}
       />
       <Button
         label="Yes"
         icon="pi pi-check"
         className="p-button-text"
-        onClick={deleteFoodCategory}
+        onClick={deletePromotion}
       />
     </>
   );
-  const deleteFoodCategorysDialogFooter = (
+  const deletePromotionsDialogFooter = (
     <>
       <Button
         label="No"
         icon="pi pi-times"
         className="p-button-text"
-        onClick={hideDeleteFoodCategorysDialog}
+        onClick={hideDeletePromotionsDialog}
       />
       <Button
         label="Yes"
         icon="pi pi-check"
         className="p-button-text"
-        onClick={deleteSelectedFoodCategorys}
+        onClick={deleteSelectedPromotions}
       />
     </>
   );
@@ -424,119 +436,100 @@ const EmptyPage = () => {
 
           <DataTable
             ref={dt}
-            value={orders}
-            selection={selectedFoodCategorys}
-            onSelectionChange={(e) => setSelectedFoodCategorys(e.value)}
-            dataKey="FoodCategoryID"
+            value={promotions}
+            selection={selectedPromotions}
+            onSelectionChange={(e) => setSelectedPromotions(e.value)}
+            dataKey="ID"
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
             className="datatable-responsive"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="Hiển thị  {first} đến {last} của {totalRecords} danh mục món ăn"
+            currentPageReportTemplate="Hiển thị mã từ {first} đến {last} của {totalRecords} mã"
             globalFilter={globalFilter}
-            emptyMessage="No orders found."
+            emptyMessage="No promotions found."
             header={header}
             responsiveLayout="scroll"
           >
-            
+            <Column
+              selectionMode="multiple"
+              headerStyle={{ width: "3rem" }}
+            ></Column>
             <Column
               field="ID"
-              header="Mã danh mục"
+              header="ID"
               sortable
-              body={FoodCategoryIDBodyTemplate}
-              headerStyle={{ width: "7%", minWidth: "7rem" }}
-            ></Column>
-          
-            <Column
-              field="Name"
-              header="Tên danh mục"
-              body={NameBodyTemplate}
-              sortable
+              body={IDBodyTemplate}
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
+           
             
-              <Column
-              field="CreatedDate"
-              header="Ngày tạo"
-              body={CreatedDateBodyTemplate}
+            <Column
+              field="Description"
+              header="Mô tả"
+              body={descriptionBodyTemplate}
               
-              headerStyle={{ width: "10%", minWidth: "10rem" }}
-            ></Column>
-              <Column
-              field="CreateBy"
-              header="Người tạo"
-              body={CreateByBodyTemplate}
-              
-              headerStyle={{ width: "7%", minWidth: "10rem" }}
-            ></Column>
-              <Column
-              field="UpdateDate"
-              header="Ngày chỉnh sửa"
-              body={UpdateDateBodyTemplate}
-              
-              headerStyle={{ width: "7%", minWidth: "10rem" }}
-            ></Column>
-              <Column
-              field="UpdateBy"
-              header="Người chỉnh sửa"
-              body={UpdateByBodyTemplate}
-              
-              headerStyle={{ width: "7%", minWidth: "7rem" }}
+              headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
             <Column
-              field="Status"
-              header="Trạng thái"
-              body={StatusBodyTemplate}
-              
-              headerStyle={{ width: "7%", minWidth: "7rem" }}
+              field="ActiveDay"
+              header="Ngày bắt đầu"
+              body={activedayBodyTemplate}
+              sortable
+              headerStyle={{ width: "14%", minWidth: "8rem" }}
             ></Column>
-
+            <Column
+              field="EndDay"
+              header="Ngày kết thúc"
+              body={enddayBodyTemplate}
+              sortable
+              headerStyle={{ width: "14%", minWidth: "8rem" }}
+            ></Column>
             <Column body={actionBodyTemplate}></Column>
           </DataTable>
 
           <Dialog
-            visible={orderDialog}
+            visible={promotionDialog}
             style={{ width: "450px" }}
-            header="Thông tin danh mục"
+            header="Chi tiết món"
             modal
             className="p-fluid"
-            footer={categoryDialogFooter}
+            footer={promotionDialogFooter}
             onHide={hideDialog}
           >
-            {order.Image && (
+            {promotion.Image && (
               <img
                 src={
                   `http://localhost:1486/Content/food/` +
-                  order.Alias +
-                  `_1.jpg`
+                  promotion.Alias +
+                  `.jpg`
                 }
-                alt={order.Image}
+                alt={promotion.Image}
                 className="shadow-2"
                 width="100"
               />
             )}
             <div className="field">
-              <label htmlFor="name">Tên danh mục</label>
+              <label htmlFor="name">Tên món ăn</label>
               <InputText
                 id="name"
-                value={order.Name}
+                value={promotion.Name}
                 onChange={(e) => onInputChange(e, "Name")}
                 required
                 autoFocus
                 className={classNames({
-                  "p-invalid": submitted && !order.Name,
+                  "p-invalid": submitted && !promotion.Name,
                 })}
               />
-              {submitted && !order.Name && (
-                <small className="p-invalid">Yêu cầu nhập tên danh mục</small>
+              {submitted && !promotion.Name && (
+                <small className="p-invalid">Yêu cầu nhập tên món ăn</small>
               )}
             </div>
             <div className="field">
               <label htmlFor="description">Mô tả</label>
               <InputTextarea
                 id="description"
-                value={order.Description}
+                value={promotion.Description}
                 onChange={(e) => onInputChange(e, "Description")}
                 required
                 rows={3}
@@ -554,13 +547,13 @@ const EmptyPage = () => {
               }
             ></Toolbar>
             
-            
+            <div className="field">{renderCategoriesRadioButton()}</div>
             <div className="formgrid grid">
               <div className="field col">
                 <label htmlFor="price">Price</label>
                 <InputNumber
                   id="price"
-                  value={order.PromotionPrice}
+                  value={promotion.PromotionPrice}
                   onValueChange={(e) =>
                     onInputNumberChange(e, "PromotionPrice")
                   }
@@ -573,7 +566,7 @@ const EmptyPage = () => {
                 <label htmlFor="OriginPrice">Giá gốc</label>
                 <InputNumber
                   id="OriginPrice"
-                  value={order.OriginPrice}
+                  value={promotion.OriginPrice}
                   onValueChange={(e) => onInputNumberChange(e, "OriginPrice")}
                   mode="currency"
                   currency="VND"
@@ -584,40 +577,40 @@ const EmptyPage = () => {
           </Dialog>
 
           <Dialog
-            visible={deleteFoodCategoryDialog}
+            visible={deletePromotionDialog}
             style={{ width: "450px" }}
             header="Xác nhận"
             modal
-            footer={deleteFoodCategoryDialogFooter}
-            onHide={hideDeleteFoodCategoryDialog}
+            footer={deletePromotionDialogFooter}
+            onHide={hideDeletePromotionDialog}
           >
             <div className="flex align-items-center justify-content-center">
               <i
                 className="pi pi-exclamation-triangle mr-3"
                 style={{ fontSize: "2rem" }}
               />
-              {order && (
+              {promotion && (
                 <span>
-                  Bạn muốn xóa món ăn này?<b>{order.Name}</b>?
+                  Bạn muốn xóa món ăn này?<b>{promotion.Name}</b>?
                 </span>
               )}
             </div>
           </Dialog>
 
           <Dialog
-            visible={deleteFoodCategorysDialog}
+            visible={deletePromotionsDialog}
             style={{ width: "450px" }}
             header="Xác nhận"
             modal
-            footer={deleteFoodCategorysDialogFooter}
-            onHide={hideDeleteFoodCategorysDialog}
+            footer={deletePromotionsDialogFooter}
+            onHide={hideDeletePromotionsDialog}
           >
             <div className="flex align-items-center justify-content-center">
               <i
                 className="pi pi-exclamation-triangle mr-3"
                 style={{ fontSize: "2rem" }}
               />
-              {order && <span>Bạn muốn xóa tất cả món ăn đã chọn khum?</span>}
+              {promotion && <span>Bạn muốn xóa tất cả món ăn đã chọn khum?</span>}
             </div>
           </Dialog>
         </div>
@@ -630,4 +623,4 @@ const comparisonFn = function (prevProps, nextProps) {
   return prevProps.location.pathname === nextProps.location.pathname;
 };
 
-export default React.memo(EmptyPage, comparisonFn);
+export default React.memo(Promotion, comparisonFn);

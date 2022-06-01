@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/routing/ProtectedRoute";
 import About from "./views/About";
 import PostContextProvider from "./contexts/PostContext";
 import Main from "./Main";
+import EmptyPage from './pages/EmptyPage';
 function App() {
   return (
     <AuthContextProvider>
@@ -24,8 +25,12 @@ function App() {
               path="/register"
               render={(props) => <Auth {...props} authRoute="register" />}
             />
+            
             <ProtectedRoute exact path="/crud" component={Main} />
-            <ProtectedRoute exact path="/about" component={About} />
+            <ProtectedRoute exact path="/empty" component={Main} />
+            <ProtectedRoute exact path="/timeline" component={Main} />
+            <ProtectedRoute exact path="/promotion" component={Main} />
+            <ProtectedRoute exact path="/user" component={Main} />
           </Switch>
         </Router>
       </PostContextProvider>

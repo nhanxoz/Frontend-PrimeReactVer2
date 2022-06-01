@@ -32,7 +32,8 @@ import IconsDemo from "./components/IconsDemo";
 import Crud from "./pages/Crud";
 import EmptyPage from "./pages/EmptyPage";
 import TimelineDemo from "./pages/TimelineDemo";
-
+import Promotion from "./pages/Promotion";
+import User from "./pages/User";
 import PrimeReact from "primereact/api";
 import { Tooltip } from "primereact/tooltip";
 
@@ -157,12 +158,12 @@ const Main = () => {
 
   const menu = [
     {
-      label: "Home",
+      label: "",
       items: [
         {
-          label: "Dashboard",
+          label: "",
           icon: "pi pi-fw pi-home",
-          to: "/",
+          to: "",
         },
       ],
     },
@@ -171,9 +172,11 @@ const Main = () => {
       label: "Pages",
       icon: "pi pi-fw pi-clone",
       items: [
-        { label: "Crud", icon: "pi pi-fw pi-user-edit", to: "/crud" },
-        { label: "Timeline", icon: "pi pi-fw pi-calendar", to: "/timeline" },
-        { label: "Empty", icon: "pi pi-fw pi-circle-off", to: "/empty" },
+        { label: "List Food", icon: "pi pi-fw pi-list", to: "/crud" },
+        { label: "Track Order", icon: "pi pi-fw pi-calendar", to: "/timeline" },
+        { label: "Categories", icon: "pi pi-fw pi-th-large", to: "/empty" },
+        { label: "Promotions", icon: "pi pi-fw pi-circle-off", to: "/promotion" },
+        { label: "List Users", icon: "pi pi-fw pi-user-edit", to: "/user" },
       ],
     },
   ];
@@ -237,7 +240,7 @@ const Main = () => {
       <div className="layout-main-container">
         <div className="layout-main">
           <Route
-            path="/"
+            path="/dashboard"
             exact
             render={() => (
               <Dashboard colorMode={layoutColorMode} location={location} />
@@ -265,10 +268,12 @@ const Main = () => {
               <ChartDemo colorMode={layoutColorMode} location={location} />
             )}
           />
-          <Route path="/misc" component={MiscDemo} />
+          <Route path="/dashboard" component={Dashboard} />
           <Route path="/timeline" component={TimelineDemo} />
           <Route path="/crud" component={Crud} />
           <Route path="/empty" component={EmptyPage} />
+          <Route path="/promotion" component={Promotion} />
+          <Route path="/user" component={User} />
           <Route path="/documentation" component={Documentation} />
         </div>
 

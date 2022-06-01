@@ -34,6 +34,13 @@ const Dashboard = (props) => {
     const menu2 = useRef(null);
     const [lineOptions, setLineOptions] = useState(null)
 
+    useEffect(() => {
+        const productService = new ProductService();
+        productService.getFoods().then((data) => {
+          setProducts(data);
+        });
+      }, []);
+      
     const applyLightTheme = () => {
         const lineOptions = {
             plugins: {
@@ -98,10 +105,10 @@ const Dashboard = (props) => {
         setLineOptions(lineOptions)
     }
 
-    useEffect(() => {
-        const productService = new ProductService();
-        productService.getProductsSmall().then(data => setProducts(data));
-    }, []);
+    //useEffect(() => {
+     //   const productService = new ProductService();
+     //   productService.getProductsSmall().then(data => setProducts(data));
+   // }, []);
 
     useEffect(() => {
         if (props.colorMode === 'light') {
@@ -114,7 +121,20 @@ const Dashboard = (props) => {
     const formatCurrency = (value) => {
         return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     };
-
+    const imageBodyTemplate = (rowData) => {
+        return (
+          <>
+            <span className="p-column-title">Ảnh</span>
+    
+            <img
+              src={`http://localhost:1486/Content/food/` + rowData.Alias + `.jpg`}
+              alt={rowData.Image}
+              className="shadow-2"
+              width="100"
+            />
+          </>
+        );
+      };
     return (
         <div className="grid">
             <div className="col-12 lg:col-6 xl:col-3">
@@ -182,14 +202,14 @@ const Dashboard = (props) => {
                 <div className="card">
                     <h5>Recent Sales</h5>
                     <DataTable value={products} rows={5} paginator responsiveLayout="scroll">
-                        <Column header="Image" body={(data) => <img className="shadow-2" src={`assets/demo/images/product/${data.image}`} alt={data.image} width="50"/>}/>
-                        <Column field="name" header="Name" sortable style={{width: '35%'}}/>
-                        <Column field="price" header="Price" sortable style={{width: '35%'}} body={(data) => formatCurrency(data.price)}/>
-                        <Column header="View" style={{width:'15%'}} body={() => (
-                            <>
-                                <Button icon="pi pi-search" type="button" className="p-button-text"/>
-                            </>
-                        )}/>
+                    <Column
+              header="Hình ảnh"
+              body={imageBodyTemplate}
+              headerStyle={{ width: "14%", minWidth: "10rem" }}
+            ></Column>
+                        <Column field="Name" header="Name" sortable style={{width: '35%'}}/>
+                        <Column field="OriginPrice" header="OriginPrice" sortable style={{width: '35%'}} />
+                        <Column field="PromotionPrice" header="PromotionPrice" style={{width:'15%'}} />
                     </DataTable>
                 </div>
                 <div className="card">
