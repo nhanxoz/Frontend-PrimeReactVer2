@@ -45,6 +45,7 @@ import "./assets/demo/flags/flags.css";
 import "./assets/demo/Demos.scss";
 import "./assets/layout/layout.scss";
 import "./App.scss";
+import AcceptOrder from "./pages/AcceptOrder";
 
 const Main = () => {
   const [layoutMode, setLayoutMode] = useState("static");
@@ -161,9 +162,9 @@ const Main = () => {
       label: "",
       items: [
         {
-          label: "",
+          label: "Home",
           icon: "pi pi-fw pi-home",
-          to: "",
+          to: "/dashboard",
         },
       ],
     },
@@ -173,10 +174,11 @@ const Main = () => {
       icon: "pi pi-fw pi-clone",
       items: [
         { label: "List Food", icon: "pi pi-fw pi-list", to: "/crud" },
-        { label: "Track Order", icon: "pi pi-fw pi-calendar", to: "/timeline" },
+        // { label: "Track Order", icon: "pi pi-fw pi-calendar", to: "/timeline" },
         { label: "Categories", icon: "pi pi-fw pi-th-large", to: "/empty" },
         { label: "Promotions", icon: "pi pi-fw pi-circle-off", to: "/promotion" },
         { label: "List Users", icon: "pi pi-fw pi-user-edit", to: "/user" },
+        { label: "Accept Order", icon: "pi pi-fw pi-check", to: "/accept" },
       ],
     },
   ];
@@ -268,12 +270,13 @@ const Main = () => {
               <ChartDemo colorMode={layoutColorMode} location={location} />
             )}
           />
-          <Route path="/dashboard" component={Dashboard} />
+          
           <Route path="/timeline" component={TimelineDemo} />
           <Route path="/crud" component={Crud} />
           <Route path="/empty" component={EmptyPage} />
           <Route path="/promotion" component={Promotion} />
           <Route path="/user" component={User} />
+          <Route path="/accept" component={AcceptOrder} />
           <Route path="/documentation" component={Documentation} />
         </div>
 

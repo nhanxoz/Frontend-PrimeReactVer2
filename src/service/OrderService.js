@@ -17,7 +17,7 @@ export class OrderService {
   }
   saveOrder(order) {
     axios.defaults.withCredentials = true;
-    return axios.post("http://localhost:1486/api/admin/order", order, {
+    return axios.post("http://localhost:1486/api/admin/editorder", order, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -27,12 +27,20 @@ export class OrderService {
 
   updateOrder(order) {
     axios.defaults.withCredentials = true;
-    return axios.put("http://localhost:8080/api/admin/order", order, {
+    return axios.put("http://localhost:1486/api/admin/order", order, {
       headers: {
         "Content-Type": "application/json",
       },
     });
   }
+  EditStatus(ID, stt) {
+    axios.defaults.withCredentials = true;
+    const urlEdit = `http://localhost:1486/api/admin/editstatus?ID=` + String(ID) +`&stt=` + String(stt);
+
+    return axios.put(urlEdit);
+
+  }
+
   uploadImageFood(event) {
     axios.defaults.withCredentials = true;
     let formData = new FormData();

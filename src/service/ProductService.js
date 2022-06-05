@@ -33,28 +33,30 @@ export class ProductService {
   }
 
   updateFood(food) {
+    console.log(food)
     axios.defaults.withCredentials = true;
-    return axios.put("http://localhost:8080/apiFood/foods/", food, {
+    return axios.put("http://localhost:1486/api/admin/editfood", food, {
       headers: {
         "Content-Type": "application/json",
       },
     });
   }
-  uploadImageFood(event) {
+  uploadImageFood(event, filename) {
     axios.defaults.withCredentials = true;
     let formData = new FormData();
     formData.append("file", event);
-
+    filename = filename + '_1.jpg';
+    formData.append("filename", filename);
     return axios
-      .post("http://localhost:8080/uploadFile", formData, {
+      .post("http://localhost:1486/api/ImageAPI/UploadFiles", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
       .then((res) => {
-        console.log(res.data.downloadUri);
+        console.log(res.data);
 
-        return res.data.downloadUri;
+        return res.data;
       });
   }
   getProductsWithOrdersSmall() {

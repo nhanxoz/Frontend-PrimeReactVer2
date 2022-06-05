@@ -20,8 +20,8 @@ const Promotion = () => {
     ID: null,
     Name: "",
     Description: "",
-    ActiveDay: null,
-    EndDay:null,
+    ActiveDay: "",
+    EndDay:"",
     FoodID: null
   };
  
@@ -41,11 +41,9 @@ const Promotion = () => {
   useEffect(() => {
     const promotionService = new PromotionService();
     promotionService.getPromotion().then((data) => {
+     
       setPromotions(data);
-    const productService = new ProductService();
-    productService.getFoods().then((data) => {
-      setProducts(data.map((i, k) => i.Name));
-      });
+      
     });
 
     
@@ -57,12 +55,7 @@ const Promotion = () => {
       currency: "VND",
     });
   };
-  const ListProduct = ()=>{
-    const productService = new ProductService();
-    productService.getFoods().then((data) => {
-      setProducts(data);
-    });
-  }
+  
   const openNew = () => {
     setPromotion(emptyPromotion);
     setSubmitted(false);
@@ -93,7 +86,7 @@ const Promotion = () => {
 
         _promotions[index] = _promotion;
         const promotionService = new PromotionService();
-        promotionService.saveFood(_promotion);
+        promotionService.savePromotion(_promotion);
         toast.current.show({
           severity: "success",
           summary: "Successful",
@@ -101,12 +94,10 @@ const Promotion = () => {
           life: 3000,
         });
       } else {
-        _promotion.ID = 1;
-
-        _promotion.Image = uri;
+        _promotion.ID = promotions.reduce((a, b) => Math.max(a, b.ID), 0) + 1;
         _promotions.push(_promotion);
         const promotionService = new PromotionService();
-        promotionService.saveFood(_promotion);
+        promotionService.savePromotion(_promotion);
         toast.current.show({
           severity: "success",
           summary: "Successful",
@@ -184,14 +175,13 @@ const Promotion = () => {
     console.log(selectedPromotions);
     const promotionService = new PromotionService();
     for (var i in selectedPromotions) {
-      promotionService.deleteFood(selectedPromotions[i].ID);
+      promotionService.deletePromotion(selectedPromotions[i].ID);
     }
 
     let _promotions = promotions.filter((val) => !selectedPromotions.includes(val));
     setPromotions(_promotions);
-
     setDeletePromotionsDialog(false);
-    setSelectedPromotions(null);
+    setSelectedPromotions(emptyPromotion);
     toast.current.show({
       severity: "success",
       summary: "Successful",
@@ -274,14 +264,14 @@ const Promotion = () => {
   };
   
 
-  const renderCategoriesRadioButton = () => {
-    return (
-      <>
-        <label className="mb-3">List Food Apply</label>
-        <div className="formgrid grid">{ListProduct}</div>
-      </>
-    );
-  };
+  // const renderCategoriesRadioButton = () => {
+  //   return (
+  //     <>
+  //       <label className="mb-3">List Food Apply</label>
+  //       <div className="formgrid grid">{ListProduct}</div>
+  //     </>
+  //   );
+  // };
   const IDBodyTemplate = (rowData) => {
     return (
       <>
@@ -323,12 +313,14 @@ const Promotion = () => {
       </>
     );
   };
-
+  const formatDate=(value) =>{
+    return (Date(value*1000));
+  }
   const activedayBodyTemplate = (rowData) => {
     return (
       <>
         <span className="p-column-title">Ngày bắt đầu</span>
-          {rowData.Activeday}
+          {formatDate(rowData.ActiveDay)}
       </>
     );
   };
@@ -337,7 +329,7 @@ const Promotion = () => {
       <>
         <span className="p-column-title">Ngày kết thúc</span>
         <span>
-          {rowData.EndDay}
+          {Date(rowData.EndDay)}
         </span>
       </>
     );
@@ -351,11 +343,11 @@ const Promotion = () => {
           className="p-button-rounded p-button-success mr-2"
           onClick={() => editPromotion(rowData)}
         />
-        <Button
+        {/* <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-warning mt-2"
           onClick={() => confirmDeletePromotion(rowData)}
-        />
+        /> */}
       </div>
     );
   };
@@ -462,7 +454,13 @@ const Promotion = () => {
               body={IDBodyTemplate}
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
-           
+           <Column
+              field="Name"
+              header="Tên mã"
+              sortable
+              body={nameBodyTemplate}
+              headerStyle={{ width: "14%", minWidth: "10rem" }}
+            ></Column>
             
             <Column
               field="Description"
@@ -471,6 +469,7 @@ const Promotion = () => {
               
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
+            
             <Column
               field="ActiveDay"
               header="Ngày bắt đầu"
@@ -497,20 +496,9 @@ const Promotion = () => {
             footer={promotionDialogFooter}
             onHide={hideDialog}
           >
-            {promotion.Image && (
-              <img
-                src={
-                  `http://localhost:1486/Content/food/` +
-                  promotion.Alias +
-                  `.jpg`
-                }
-                alt={promotion.Image}
-                className="shadow-2"
-                width="100"
-              />
-            )}
+           
             <div className="field">
-              <label htmlFor="name">Tên món ăn</label>
+              <label htmlFor="name">Tên mã</label>
               <InputText
                 id="name"
                 value={promotion.Name}
@@ -522,7 +510,7 @@ const Promotion = () => {
                 })}
               />
               {submitted && !promotion.Name && (
-                <small className="p-invalid">Yêu cầu nhập tên món ăn</small>
+                <small className="p-invalid">Yêu cầu nhập tên mã</small>
               )}
             </div>
             <div className="field">
@@ -536,41 +524,28 @@ const Promotion = () => {
                 cols={20}
               />
             </div>
-            <Toolbar
-              className="mb-4"
-              right={
-                <FileUpload
-                  chooseOptions={chooseOptions}
-                  customUpload
-                  uploadHandler={myUploader}
-                />
-              }
-            ></Toolbar>
             
-            <div className="field">{renderCategoriesRadioButton()}</div>
+            
+            {/* <div className="field">{renderCategoriesRadioButton()}</div> */}
             <div className="formgrid grid">
               <div className="field col">
-                <label htmlFor="price">Price</label>
+                <label htmlFor="activeday">Ngày bắt đầu</label>
                 <InputNumber
-                  id="price"
-                  value={promotion.PromotionPrice}
+                  id="activeday"
+                  value={promotion.ActiveDay}
                   onValueChange={(e) =>
-                    onInputNumberChange(e, "PromotionPrice")
+                    onInputNumberChange(e, "Activeday")
                   }
-                  mode="currency"
-                  currency="VND"
-                  locale="vi-VN"
+                 
                 />
               </div>
               <div className="field col">
-                <label htmlFor="OriginPrice">Giá gốc</label>
+                <label htmlFor="endday">Ngày kết thúc</label>
                 <InputNumber
-                  id="OriginPrice"
-                  value={promotion.OriginPrice}
-                  onValueChange={(e) => onInputNumberChange(e, "OriginPrice")}
-                  mode="currency"
-                  currency="VND"
-                  locale="vi-VN"
+                  id="endday"
+                  value={promotion.EndDay}
+                  //onValueChange={(e) => onInputNumberChange(e, "Endday")}
+                  
                 />
               </div>
             </div>
@@ -610,7 +585,7 @@ const Promotion = () => {
                 className="pi pi-exclamation-triangle mr-3"
                 style={{ fontSize: "2rem" }}
               />
-              {promotion && <span>Bạn muốn xóa tất cả món ăn đã chọn khum?</span>}
+              {promotion && <span>Bạn muốn xóa tất cả mã đã chọn không?</span>}
             </div>
           </Dialog>
         </div>

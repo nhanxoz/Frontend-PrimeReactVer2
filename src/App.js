@@ -14,7 +14,7 @@ function App() {
       <PostContextProvider>
         <Router>
           <Switch>
-            <Route exact path="/" component={Landing} />
+            {/* <Route exact path="/" component={Landing} /> */}
             <Route
               exact
               path="/login"
@@ -25,12 +25,13 @@ function App() {
               path="/register"
               render={(props) => <Auth {...props} authRoute="register" />}
             />
-            
+            <ProtectedRoute exact path="/dashboard" component={Main} />
             <ProtectedRoute exact path="/crud" component={Main} />
             <ProtectedRoute exact path="/empty" component={Main} />
-            <ProtectedRoute exact path="/timeline" component={Main} />
+            {/* <ProtectedRoute exact path="/timeline" component={Main} /> */}
             <ProtectedRoute exact path="/promotion" component={Main} />
             <ProtectedRoute exact path="/user" component={Main} />
+            <ProtectedRoute exact path="/accept" component={Main} />
           </Switch>
         </Router>
       </PostContextProvider>

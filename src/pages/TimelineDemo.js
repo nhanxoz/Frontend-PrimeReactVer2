@@ -16,11 +16,11 @@ import { OrderService } from "../service/OrderService";
 
 const TimelineDemo = () => {
   let emptyOrder = {
-    OrderID: null,
+    ID: null,
     CreatedByUserID: "",
     CustomerName: null,
     CustomerAddress: 0,
-    ID: 0,
+    FoodOptionID:0,
     Name: 0,
     Image: "",
     OriginPrice:0,
@@ -52,15 +52,40 @@ const TimelineDemo = () => {
   }, []);
 
   const formatCurrency = (value) => {
+    if(value == 0) return String("Chờ xác nhận");
+    else
     if(value == 1) return String(
-    "Đã phục vụ",
+    "Chờ phục vụ",
     );
+    else if(value == 2) return String("Đang giao");
+    else if(value == 3) return String("Đã giao")
     return String(
-      "Chưa phục vụ",
+      "Đã huỷ",
       );
   };
 
- 
+  const onChangeValue=(event) => {
+    console.log(event.target.value);
+    let _order = { ...order };
+     _order["Status"]=event.target.value;
+     console.log(_order["Status"])
+    setOrder(_order);
+    
+  }
+
+  const render=() =>{
+    return (
+      <div onChange={onChangeValue}>
+        <div><label>Trạng thái</label> <h2>  </h2></div>
+        <div>
+        <input type="radio" value="1" name="Status" /> Đã phục vụ  
+        <h2>  </h2>
+        <input type="radio" value="0" name="Status" /> Chưa phục vụ
+        </div>
+      </div>
+    );
+  }
+  
 
   const hideDialog = () => {
     setSubmitted(false);
@@ -78,13 +103,14 @@ const TimelineDemo = () => {
   const saveOrder = () => {
     setSubmitted(true);
 
-    if (order.Name.trim()) {
+    if (order.CustomerName.trim()) {
       let _orders = [...orders];
       let _order = { ...order };
-      if (order.OrderID) {
-        const index = findIndexById(order.OrderID);
+     
+        const index = findIndexById(order.ID);
 
         _orders[index] = _order;
+        console.log(_order);
         const orderService = new OrderService();
         orderService.saveOrder(_order);
         toast.current.show({
@@ -93,20 +119,7 @@ const TimelineDemo = () => {
           detail: "order Updated",
           life: 3000,
         });
-      } else {
-        _order.ID = 1;
-
-        _order.Image = uri;
-        _orders.push(_order);
-        const orderService = new OrderService();
-        orderService.saveOrder(_order);
-        toast.current.show({
-          severity: "success",
-          summary: "Successful",
-          detail: "order Created",
-          life: 3000,
-        });
-      }
+      
 
       setOrders(_orders);
       setOrderDialog(false);
@@ -145,7 +158,7 @@ const TimelineDemo = () => {
   const findIndexById = (id) => {
     let index = -1;
     for (let i = 0; i < orders.length; i++) {
-      if (orders[i].OrderID === id) {
+      if (orders[i].ID === id) {
         index = i;
         break;
       }
@@ -176,7 +189,7 @@ const TimelineDemo = () => {
     console.log(selectedOrders);
     const orderService = new OrderService();
     for (var i in selectedOrders) {
-      orderService.deleteFood(selectedOrders[i].OrderID);
+      orderService.deleteOrder(selectedOrders[i].ID);
     }
 
     let _orders = orders.filter((val) => !selectedOrders.includes(val));
@@ -218,17 +231,23 @@ const TimelineDemo = () => {
     setOrder(_order);
   };
 
+  
   const leftToolbarTemplate = () => {
     return (
       <React.Fragment>
         <div className="my-2">
           
-          
+          <Button
+            label="Xóa"
+            icon="pi pi-trash"
+            className="p-button-danger"
+            onClick={confirmDeleteSelected}
+            disabled={!selectedOrders || !selectedOrders.length}
+          />
         </div>
       </React.Fragment>
     );
   };
-
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>
@@ -255,7 +274,7 @@ const TimelineDemo = () => {
     return (
       <>
         <span className="p-column-title">Mã đặt đơn</span>
-        {rowData.OrderID}
+        {rowData.ID}
       </>
     );
   };
@@ -364,13 +383,13 @@ const TimelineDemo = () => {
   const actionBodyTemplate = (rowData) => {
     return (
       <div className="actions">
-        
-        <Button
-          icon="pi pi-trash"
-          className="p-button-rounded p-button-warning mt-2"
-          onClick={() => confirmDeleteOrder(rowData)}
-        />
-      </div>
+      <Button
+        icon="pi pi-pencil"
+        className="p-button-rounded p-button-success mr-2"
+        onClick={() => editOrder(rowData)}
+      />
+      
+    </div>
     );
   };
 
@@ -453,7 +472,7 @@ const TimelineDemo = () => {
             value={orders}
             selection={selectedOrders}
             onSelectionChange={(e) => setSelectedOrders(e.value)}
-            dataKey="OrderID"
+            dataKey="ID"
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
@@ -465,7 +484,10 @@ const TimelineDemo = () => {
             header={header}
             responsiveLayout="scroll"
           >
-            
+             <Column
+              selectionMode="multiple"
+              headerStyle={{ width: "3rem" }}
+            ></Column>
             <Column
               field="OrderID"
               header="Mã đặt đơn"
@@ -545,6 +567,14 @@ const TimelineDemo = () => {
             footer={orderDialogFooter}
             onHide={hideDialog}
           >
+            <div className="field">
+              <label htmlFor="description">Tên khách hàng</label>
+              <InputText
+                id="customername"
+                value={order.CustomerName}
+                onChange={(e) => onInputChange(e, "Name")}
+              />
+            </div>
             {order.Image && (
               <img
                 src={
@@ -573,28 +603,8 @@ const TimelineDemo = () => {
                 <small className="p-invalid">Yêu cầu nhập tên món ăn</small>
               )}
             </div>
-            <div className="field">
-              <label htmlFor="description">Mô tả</label>
-              <InputTextarea
-                id="description"
-                value={order.Description}
-                onChange={(e) => onInputChange(e, "Description")}
-                required
-                rows={3}
-                cols={20}
-              />
-            </div>
-            <Toolbar
-              className="mb-4"
-              right={
-                <FileUpload
-                  chooseOptions={chooseOptions}
-                  customUpload
-                  uploadHandler={myUploader}
-                />
-              }
-            ></Toolbar>
             
+            <div className="field">{render()}</div>
 
             <div className="formgrid grid">
               <div className="field col">

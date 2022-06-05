@@ -48,6 +48,30 @@ const Crud = () => {
     });
   }, []);
 
+  function removeAccents(str) {
+    console.log(str)
+    var AccentsMap = [
+      "aàảãáạăằẳẵắặâầẩẫấậ",
+      "AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬ",
+      "dđ", "DĐ",
+      "eèẻẽéẹêềểễếệ",
+      "EÈẺẼÉẸÊỀỂỄẾỆ",
+      "iìỉĩíị",
+      "IÌỈĨÍỊ",
+      "oòỏõóọôồổỗốộơờởỡớợ",
+      "OÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢ",
+      "uùủũúụưừửữứự",
+      "UÙỦŨÚỤƯỪỬỮỨỰ",
+      "yỳỷỹýỵ",
+      "YỲỶỸÝỴ"    
+    ];
+    for (var i=0; i<AccentsMap.length; i++) {
+      var re = new RegExp('[' + AccentsMap[i].substr(1) + ']', 'g');
+      var char = AccentsMap[i][0];
+      str = str.replace(re, char);
+    }
+    return str;
+  }
   const formatCurrency = (value) => {
     return value.toLocaleString("vi-VN", {
       style: "currency",
@@ -85,7 +109,7 @@ const Crud = () => {
 
         _products[index] = _product;
         const productService = new ProductService();
-        productService.saveFood(_product);
+        productService.updateFood(_product);
         toast.current.show({
           severity: "success",
           summary: "Successful",
@@ -93,8 +117,8 @@ const Crud = () => {
           life: 3000,
         });
       } else {
-        _product.ID = 1;
-
+        _product.ID = products.reduce((a, b) => Math.max(a, b.ID), 0) + 1;
+        _product.Alias = removeAccents(_product.Name)
         _product.Image = uri;
         _products.push(_product);
         const productService = new ProductService();
@@ -210,9 +234,7 @@ const Crud = () => {
   const myUploader = (file) => {
     const productService = new ProductService();
 
-    productService
-      .uploadImageProduct(file.files[0])
-      .then((data) => setUri(data));
+    productService. uploadImageFood(file.files[0], removeAccents(product.Name)).then((data) => setUri(data));
   };
   const onInputNumberChange = (e, name) => {
     const val = e.value || 0;
@@ -375,11 +397,7 @@ const Crud = () => {
           className="p-button-rounded p-button-success mr-2"
           onClick={() => editProduct(rowData)}
         />
-        <Button
-          icon="pi pi-trash"
-          className="p-button-rounded p-button-warning mt-2"
-          onClick={() => confirmDeleteProduct(rowData)}
-        />
+        
       </div>
     );
   };

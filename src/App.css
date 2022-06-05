@@ -1,11 +1,11 @@
 .landing {
 	position: relative;
-	background: url('./assets/landing.jpg') no-repeat center center/cover;
+	/* background: url('./assets/landing.jpg') no-repeat center center/cover; */
 	height: 100vh;
 }
 
 .dark-overlay {
-	background-color: rgba(0, 0, 0, 0.5);
+	/* background-color: rgba(0, 0, 0, 0.5); */
 	height: 100%;
 }
 
@@ -19,14 +19,14 @@
 	text-align: center;
 }
 
-.landing-inner form {
+/* .landing-inner form {
 	width: 30%;
-}
+} */
 
 .landing-inner h1,
 .landing-inner h4,
 .landing-inner p {
-	color: white;
+	color: #471a1a;
 }
 
 .spinner-container {
