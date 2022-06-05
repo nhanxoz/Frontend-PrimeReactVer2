@@ -11,14 +11,14 @@ const RegisterForm = () => {
 
 	// Local state
 	const [registerForm, setRegisterForm] = useState({
-		username: '',
-		password: '',
+		Email: '',
+		Password: '',
 		confirmPassword: ''
 	})
 
 	const [alert, setAlert] = useState(null)
 
-	const { username, password, confirmPassword } = registerForm
+	const { Email, Password, confirmPassword } = registerForm
 
 	const onChangeRegisterForm = event =>
 		setRegisterForm({
@@ -29,7 +29,7 @@ const RegisterForm = () => {
 	const register = async event => {
 		event.preventDefault()
 
-		if (password !== confirmPassword) {
+		if (Password !== confirmPassword) {
 			setAlert({ type: 'danger', message: 'Passwords do not match' })
 			setTimeout(() => setAlert(null), 5000)
 			return
@@ -47,53 +47,30 @@ const RegisterForm = () => {
 	}
 
 	return (
-		<>
-			<Form className='my-4' onSubmit={register}>
-				<AlertMessage info={alert} />
-
-				<Form.Group>
-					<Form.Control
-						type='text'
-						placeholder='Username'
-						name='username'
-						required
-						value={username}
-						onChange={onChangeRegisterForm}
-					/>
-				</Form.Group>
-				<Form.Group>
-					<Form.Control
-						type='password'
-						placeholder='Password'
-						name='password'
-						required
-						value={password}
-						onChange={onChangeRegisterForm}
-					/>
-				</Form.Group>
-				<Form.Group>
-					<Form.Control
-						type='password'
-						placeholder='Confirm Password'
-						name='confirmPassword'
-						required
-						value={confirmPassword}
-						onChange={onChangeRegisterForm}
-					/>
-				</Form.Group>
-				<Button variant='success' type='submit'>
-					Register
-				</Button>
-			</Form>
-			<p>
-				Already have an account?
+			<div class="row">
+               
+			   <div class="colm-form">
+				   <div class="form-container">
+					   <h2>Register</h2>
+				   <Form  class="form-container" onSubmit={register}>
+					   <input type="text" placeholder="Email address" autoFocus name="Email" required value={Email} onChange={onChangeRegisterForm}/>
+					   <input type="password" placeholder="Password" name ="Password" required value={Password} onChange={onChangeRegisterForm}/>
+					   <input type="password" placeholder="Confirm Password" name ="confirmPassword" required value={confirmPassword} onChange={onChangeRegisterForm}/>
+					   <button class="btn-login" type ="submit">Register</button>
+					  
+				   </Form>
+				  <p>Already have an account?</p> 
 				<Link to='/login'>
 					<Button variant='info' size='sm' className='ml-2'>
 						Login
 					</Button>
 				</Link>
+				   </div>
+				   <p>
+				
 			</p>
-		</>
+			   </div>
+		   </div>
 	)
 }
 

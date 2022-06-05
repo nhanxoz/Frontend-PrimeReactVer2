@@ -16,6 +16,7 @@ import { UserService } from "../service/UserService";
 
 const User = () => {
   let emptyUser = {
+    Id: 0,
     Image:null,
     FullName: "",
     Address: "",
@@ -24,12 +25,18 @@ const User = () => {
     BirthDay:"",
     Career:"",
   };
+  let emptyUserRole = {
+    IDUser:0,
+    IDRole:0,
+    IdUserRole:null
+  };
  
   const [users, setUsers] = useState(null);
   const [userDialog, setUserDialog] = useState(false);
   const [deleteUserDialog, setDeleteUserDialog] = useState(false);
   const [deleteUsersDialog, setDeleteUsersDialog] = useState(false);
   const [user, setUser] = useState(emptyUser);
+  const [userRole, setUserRole] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState(null);
@@ -72,44 +79,27 @@ const User = () => {
     setDeleteUsersDialog(false);
   };
 
+  //save userRole
   const saveUser = () => {
     setSubmitted(true);
 
-    if (user.Name.trim()) {
-      let _users = [...users];
-      let _user = { ...user };
-      if (user.ID) {
-        const index = findIndexById(user.ID);
-
-        _users[index] = _user;
+    
+      let _userRole = { ...userRole };
+      
         const userService = new UserService();
-        userService.saveFood(_user);
+        userService.saveUser(_userRole);
         toast.current.show({
           severity: "success",
           summary: "Successful",
           detail: "User Updated",
           life: 3000,
         });
-      } else {
-        _user.ID = 1;
-
-        _user.Image = uri;
-        _users.push(_user);
-        const userService = new UserService();
-        userService.saveFood(_user);
-        toast.current.show({
-          severity: "success",
-          summary: "Successful",
-          detail: "User Created",
-          life: 3000,
-        });
-      }
-
-      setUsers(_users);
+      
+      setUsers(_userRole);
       setUserDialog(false);
       setUser(emptyUser);
-      console.log(_users);
-    }
+      // console.log(_users);
+    
   };
 
   const editUser = (user) => {
@@ -174,7 +164,7 @@ const User = () => {
     console.log(selectedUsers);
     const userService = new UserService();
     for (var i in selectedUsers) {
-      userService.deleteUser(selectedUsers[i].ID);
+      userService.deleteUser(selectedUsers[i].Id);
     }
 
     let _users = users.filter((val) => !selectedUsers.includes(val));
@@ -223,15 +213,15 @@ const User = () => {
   const leftToolbarTemplate = () => {
     return (
       <React.Fragment>
-        <div className="my-2">
+        {/* <div className="my-2">
           <Button
             label="Thêm mới"
             icon="pi pi-plus"
             className="p-button-success mr-2"
             onClick={openNew}
           />
-          
-        </div>
+         
+        </div> */}
       </React.Fragment>
     );
   };
@@ -257,7 +247,14 @@ const User = () => {
     );
   };
   
- 
+  const IdBodyTemplate = (rowData) => {
+    return (
+      <>
+        <span className="p-column-title">Mã người dùng</span>
+        {rowData.Id}
+      </>
+    );
+  };
   const fullnameBodyTemplate = (rowData) => {
     return (
       <>
@@ -337,18 +334,14 @@ const User = () => {
           className="p-button-rounded p-button-success mr-2"
           onClick={() => editUser(rowData)}
         />
-        <Button
-          icon="pi pi-trash"
-          className="p-button-rounded p-button-warning mt-2"
-          onClick={() => confirmDeleteUser(rowData)}
-        />
+       
       </div>
     );
   };
 
   const header = (
     <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-      <h5 className="m-0">Danh sách Mã giảm giá</h5>
+      <h5 className="m-0">Danh sách Người dùng</h5>
       <span className="block mt-2 md:mt-0 p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -392,6 +385,30 @@ const User = () => {
       />
     </>
   );
+
+  const onChangeValue=(event) => {
+    console.log(event.target.value);
+    let _user = { ...user};
+    let _userRole = {...userRole};
+    _userRole["IDUser"]=_user.Id;
+    _userRole["IDRole"]=event.target.value;
+    
+     console.log(_userRole)
+    setUserRole(_userRole);
+    
+  }
+  const render=() =>{
+    return (
+      <div onChange={onChangeValue}>
+        <div><label>Quyền:</label> <h2>  </h2></div>
+        <div>
+        <input type="radio" value="1" name="Status" /> ADMIN
+        <h2>  </h2>
+        <input type="radio" value="2" name="Status" /> USER
+        </div>
+      </div>
+    );
+  }
   const deleteUsersDialogFooter = (
     <>
       <Button
@@ -425,7 +442,7 @@ const User = () => {
             value={users}
             selection={selectedUsers}
             onSelectionChange={(e) => setSelectedUsers(e.value)}
-            dataKey="ID"
+            dataKey="Id"
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
@@ -437,7 +454,14 @@ const User = () => {
             header={header}
             responsiveLayout="scroll"
           >
-            
+             
+            <Column
+              field="Id"
+              header="Mã người dùng"
+              sortable
+              body={IdBodyTemplate}
+              headerStyle={{ width: "14%", minWidth: "10rem" }}
+            ></Column>
             <Column
               field="FullName"
               header="Họ tên"
@@ -486,7 +510,7 @@ const User = () => {
               sortable
               headerStyle={{ width: "14%", minWidth: "8rem" }}
             ></Column>
-            <Column body={actionBodyTemplate}></Column>
+            {/* <Column body={actionBodyTemplate}></Column> */}
           </DataTable>
 
           <Dialog
@@ -498,83 +522,19 @@ const User = () => {
             footer={userDialogFooter}
             onHide={hideDialog}
           >
-            {user.Image && (
-              <img
-                src={
-                  `http://localhost:1486/Content/food/` +
-                  user.Alias +
-                  `.jpg`
-                }
-                alt={user.Image}
-                className="shadow-2"
-                width="100"
-              />
-            )}
+            
             <div className="field">
-              <label htmlFor="name">Tên người dùng</label>
-              <InputText
-                id="name"
-                value={user.Name}
-                onChange={(e) => onInputChange(e, "Name")}
-                required
-                autoFocus
-                className={classNames({
-                  "p-invalid": submitted && !user.Name,
-                })}
-              />
-              {submitted && !user.Name && (
+              <label htmlFor="name">Tên người dùng: {user.FullName}</label>
+              
+              {submitted && !user.FullName && (
                 <small className="p-invalid">Yêu cầu nhập tên người dùng</small>
               )}
             </div>
-            <div className="field">
-              <label htmlFor="description">Mô tả</label>
-              <InputTextarea
-                id="description"
-                value={user.Description}
-                onChange={(e) => onInputChange(e, "Description")}
-                required
-                rows={3}
-                cols={20}
-              />
-            </div>
-            <Toolbar
-              className="mb-4"
-              right={
-                <FileUpload
-                  chooseOptions={chooseOptions}
-                  customUpload
-                  uploadHandler={myUploader}
-                />
-              }
-            ></Toolbar>
+            {render()}
+            
             
 
-            <div className="formgrid grid">
-              <div className="field col">
-                <label htmlFor="price">Price</label>
-                <InputNumber
-                  id="price"
-                  value={user.UserPrice}
-                  onValueChange={(e) =>
-                    onInputNumberChange(e, "UserPrice")
-                  }
-                  mode="currency"
-                  currency="VND"
-                  locale="vi-VN"
-                />
-              </div>
-              <div className="field col">
-                <label htmlFor="OriginPrice">Giá gốc</label>
-                <InputNumber
-                  id="OriginPrice"
-                  value={user.OriginPrice}
-                  onValueChange={(e) => onInputNumberChange(e, "OriginPrice")}
-                  mode="currency"
-                  currency="VND"
-                  locale="vi-VN"
-                />
-              </div>
-            </div>
+            
           </Dialog>
 
           <Dialog
@@ -592,7 +552,7 @@ const User = () => {
               />
               {user && (
                 <span>
-                  Bạn muốn xóa món ăn này?<b>{user.Name}</b>?
+                  Bạn muốn người dùng này?<b>{user.Name}</b>?
                 </span>
               )}
             </div>
@@ -611,7 +571,7 @@ const User = () => {
                 className="pi pi-exclamation-triangle mr-3"
                 style={{ fontSize: "2rem" }}
               />
-              {user && <span>Bạn muốn xóa tất cả món ăn đã chọn khum?</span>}
+              {user && <span>Bạn muốn xóa các mục đã chọn?</span>}
             </div>
           </Dialog>
         </div>

@@ -27,7 +27,7 @@ export class FoodCategoryService {
 
   updateFoodCategory(categoryfood) {
     axios.defaults.withCredentials = true;
-    return axios.put("http://localhost:8080/api/admin/categoryfood", categoryfood, {
+    return axios.put("http://localhost:1486/api/admin/categoryfood", categoryfood, {
       headers: {
         "Content-Type": "application/json",
       },

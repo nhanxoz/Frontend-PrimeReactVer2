@@ -11,7 +11,7 @@ export class PromotionService {
   
   deletePromotion(id) {
     axios.defaults.withCredentials = true;
-    const urlDelete = `http://localhost:1486/api/admin/promotion?id=` + String(id);
+    const urlDelete = `http://localhost:1486/api/admin/delete?id=` + String(id);
 
     return axios.delete(urlDelete);
   }

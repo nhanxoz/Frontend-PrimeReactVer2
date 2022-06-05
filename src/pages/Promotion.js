@@ -42,10 +42,10 @@ const Promotion = () => {
     const promotionService = new PromotionService();
     promotionService.getPromotion().then((data) => {
       setPromotions(data);
-    const productService = new ProductService();
-    productService.getFoods().then((data) => {
-      setProducts(data.map((i, k) => i.Name));
-      });
+    // const productService = new ProductService();
+    // productService.getFoods().then((data) => {
+    //   setProducts(data.map((i, k) => i.Name));
+    //   });
     });
 
     
@@ -57,12 +57,7 @@ const Promotion = () => {
       currency: "VND",
     });
   };
-  const ListProduct = ()=>{
-    const productService = new ProductService();
-    productService.getFoods().then((data) => {
-      setProducts(data);
-    });
-  }
+  
   const openNew = () => {
     setPromotion(emptyPromotion);
     setSubmitted(false);
@@ -184,14 +179,13 @@ const Promotion = () => {
     console.log(selectedPromotions);
     const promotionService = new PromotionService();
     for (var i in selectedPromotions) {
-      promotionService.deleteFood(selectedPromotions[i].ID);
+      promotionService.deletePromotion(selectedPromotions[i].ID);
     }
 
     let _promotions = promotions.filter((val) => !selectedPromotions.includes(val));
     setPromotions(_promotions);
-
     setDeletePromotionsDialog(false);
-    setSelectedPromotions(null);
+    setSelectedPromotions(emptyPromotion);
     toast.current.show({
       severity: "success",
       summary: "Successful",
@@ -274,14 +268,14 @@ const Promotion = () => {
   };
   
 
-  const renderCategoriesRadioButton = () => {
-    return (
-      <>
-        <label className="mb-3">List Food Apply</label>
-        <div className="formgrid grid">{ListProduct}</div>
-      </>
-    );
-  };
+  // const renderCategoriesRadioButton = () => {
+  //   return (
+  //     <>
+  //       <label className="mb-3">List Food Apply</label>
+  //       <div className="formgrid grid">{ListProduct}</div>
+  //     </>
+  //   );
+  // };
   const IDBodyTemplate = (rowData) => {
     return (
       <>
@@ -328,7 +322,7 @@ const Promotion = () => {
     return (
       <>
         <span className="p-column-title">Ngày bắt đầu</span>
-          {rowData.Activeday}
+          {Date(rowData.Activeday)}
       </>
     );
   };
@@ -337,7 +331,7 @@ const Promotion = () => {
       <>
         <span className="p-column-title">Ngày kết thúc</span>
         <span>
-          {rowData.EndDay}
+          {Date(rowData.EndDay)}
         </span>
       </>
     );
@@ -351,11 +345,11 @@ const Promotion = () => {
           className="p-button-rounded p-button-success mr-2"
           onClick={() => editPromotion(rowData)}
         />
-        <Button
+        {/* <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-warning mt-2"
           onClick={() => confirmDeletePromotion(rowData)}
-        />
+        /> */}
       </div>
     );
   };
@@ -547,7 +541,7 @@ const Promotion = () => {
               }
             ></Toolbar>
             
-            <div className="field">{renderCategoriesRadioButton()}</div>
+            {/* <div className="field">{renderCategoriesRadioButton()}</div> */}
             <div className="formgrid grid">
               <div className="field col">
                 <label htmlFor="price">Price</label>
@@ -610,7 +604,7 @@ const Promotion = () => {
                 className="pi pi-exclamation-triangle mr-3"
                 style={{ fontSize: "2rem" }}
               />
-              {promotion && <span>Bạn muốn xóa tất cả món ăn đã chọn khum?</span>}
+              {promotion && <span>Bạn muốn xóa tất cả mã đã chọn không?</span>}
             </div>
           </Dialog>
         </div>

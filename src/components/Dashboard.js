@@ -5,42 +5,114 @@ import { Chart } from 'primereact/chart';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProductService } from '../service/ProductService';
+import { DashboardService } from '../service/DashboardService';
 
-const lineData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-        {
-            label: 'First Dataset',
-            data: [65, 59, 80, 81, 56, 55, 40],
-            fill: false,
-            backgroundColor: '#2f4860',
-            borderColor: '#2f4860',
-            tension: .4
-        },
-        {
-            label: 'Second Dataset',
-            data: [28, 48, 40, 19, 86, 27, 90],
-            fill: false,
-            backgroundColor: '#00bb7e',
-            borderColor: '#00bb7e',
-            tension: .4
-        }
-    ]
-};
 
 const Dashboard = (props) => {
-    const [products, setProducts] = useState(null);
+    const [sales, setSales] = useState(null);
+    const [saling, setSaling] = useState([{id: 0, name:'', c:0}]);
+    const [order, setOrder] = useState([{allorder: 0, neworder: 0}]);
+    const [revenue, setRevenue] = useState([{Inmonth: 0, Lastmonth: 0}]);
+    const [customer, setCustomer] = useState([{Customer: 0, NewRegister: 0}]);
+    const [chart, setChart] = useState([{thang:3}]);
+    const [arrngay, setArrngay] = useState(null);
+    const [arrtong, setArrtong] = useState(null);
+    const [cart, setCart]=useState([{ID: 0, FullName:'', Status:0}]);
+    const [food, setFood] = useState(null);
     const menu1 = useRef(null);
     const menu2 = useRef(null);
     const [lineOptions, setLineOptions] = useState(null)
 
     useEffect(() => {
-        const productService = new ProductService();
-        productService.getFoods().then((data) => {
-          setProducts(data);
-        });
-      }, []);
+        
+        const dashboardService = new DashboardService(); console.log("test");
+        dashboardService.getSales().then((data) => {
+            setSales(data);
+        })
+        dashboardService.getSellings().then((data) => {
+            setSaling(data);
+        })
+        dashboardService.getOrderTK().then((data) => {
+            setOrder(data);
+        })
+        dashboardService.getRevenue().then((data) => {
+            setRevenue(data);
+        })
+        dashboardService.getCustomer().then((data) => {
+            setCustomer(data);
+        })
+        dashboardService.getChart().then((data) => {
+            setChart(data);
+        })
+        dashboardService.getcart().then((data)=>{
+            setCart(data);
+        })
+    }, [])
+   
+
+    
+    const getDays = (year, month) => {
+        return new Date(year, month, 0).getDate();
+    };
+    const formatDate=() =>{
+        return Array.from(new Array(getDays(2022,chart[0].thang)), (x, i) => i + 1);
+       // [...Array(1,getDays(2022,chart[0].thang)).keys()] 
+    }
+    const formatRevenue = ()=>{
+        let arrtong = Array(formatDate().length).fill(0);
+        
+        for (var i in formatDate()){
+            
+            for (var item in chart){
+                
+                if (chart[item].ngay == i){
+                    
+                    arrtong[i-1] = chart[item].tong
+                }
+            }
+        }
+        
+        return arrtong
+        // formatDate().forEach(myFunction);
+        // function myFunction(item, index)
+        // {
+        //     if(index + 1==item.ngay)
+        //     arrtong[index]=item.tong;
+        //     else arrtong[index]=0;
+        // }
+        
+    }
+    //const arrtong = chart.reduce((prev, no) => [...prev, no.tong], [])
+    console.log('arr')
+    console.log(chart)
+    console.log(formatRevenue())
+    console.log(chart[0].thang)
+   console.log(getDays(2022,chart[0].thang))
+    const lineData = {
+        
+        labels: formatDate(),
       
+        datasets: [
+            {
+                label: 'Revenue',
+                // data: [3,2,3,23,23,232],
+                data: formatRevenue(),
+                fill: false,
+                backgroundColor: '#2f4860',
+                borderColor: '#2f4860',
+                tension: .4
+            },
+            // {
+            //     label: 'Second Dataset',
+            //     data: [28, 48, 40, 19, 86, 27, 90],
+            //     fill: false,
+            //     backgroundColor: '#00bb7e',
+            //     borderColor: '#00bb7e',
+            //     tension: .4
+            // }
+        ]
+    };
+
     const applyLightTheme = () => {
         const lineOptions = {
             plugins: {
@@ -121,87 +193,117 @@ const Dashboard = (props) => {
     const formatCurrency = (value) => {
         return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     };
+    const renderListSaling = () => {
+        console.log(saling)
+        return saling.map((item, index)=> {
+            return <li className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4" key={index}>
+            <div>
+                <span className="text-900 font-medium mr-2 mb-1 md:mb-0">{item.name}</span>
+                <div className="mt-1 text-600">Mã sản phẩm:{item.id}</div>
+            </div>
+            <div className="mt-2 md:mt-0 flex align-items-center">
+                <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{height: '8px'}}>
+                    <div className="bg-orange-500 h-full" style={{width: '50%'}}/>
+                </div>
+                <span className="text-orange-500 ml-3 font-medium">Số lượng bán: {item.c}</span>
+            </div>
+        </li>
+        })
+    }
+    const formatStatus = (value) => {
+        if(value == 0) return String("Chờ xác nhận");
+        else
+        if(value == 1) return String(
+        "Chờ phục vụ",
+        );
+        else if(value == 2) return String("Đang giao");
+        else if(value == 3) return String("Đã giao")
+        return String(
+          "Đã huỷ",
+          );
+      };
+    const renderNotification = ()=>{
+        console.log(cart);
+        return cart.map((item, index)=>{
+           return  <li className="flex align-items-center py-2 border-bottom-1 surface-border" key={index}>
+                <div className="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
+                    <i className="pi pi-dollar text-xl text-blue-500"/>
+                </div>
+                <span className="text-900 line-height-3">Mã đơn hàng: {item.ID}
+                
+            <span className="text-2000"> Tên khách hàng: {item.FullName} </span><span className="text-blue-500">Trạng thái: {formatStatus(item.Status)}</span></span>
+            
+            </li>
+        })
+    }
     const imageBodyTemplate = (rowData) => {
         return (
           <>
             <span className="p-column-title">Ảnh</span>
     
             <img
-              src={`http://localhost:1486/Content/food/` + rowData.Alias + `.jpg`}
-              alt={rowData.Image}
+              src={`http://localhost:1486/Content/food/` + rowData.Alias + `_1.jpg`}
+              alt={rowData.Alias}
               className="shadow-2"
               width="100"
             />
           </>
         );
       };
+
     return (
         <div className="grid">
-            <div className="col-12 lg:col-6 xl:col-3">
-                <div className="card mb-0">
-                    <div className="flex justify-content-between mb-3">
-                        <div>
-                            <span className="block text-500 font-medium mb-3">Orders</span>
-                            <div className="text-900 font-medium text-xl">152</div>
-                        </div>
-                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
-                            <i className="pi pi-shopping-cart text-blue-500 text-xl"/>
-                        </div>
+           <div className="col-12 lg:col-6 xl:col-4">
+            <div className="card mb-0">
+                <div className="flex justify-content-between mb-3">
+                    <div>
+                        <span className="block text-500 font-medium mb-3">Orders</span>
+                        <div className="text-900 font-medium text-xl">{order[0].allorder}</div>
                     </div>
-                    <span className="text-green-500 font-medium">24 new </span>
-                    <span className="text-500">since last visit</span>
+                    <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
+                        <i className="pi pi-shopping-cart text-blue-500 text-xl"/>
+                    </div>
                 </div>
+                <span className="text-green-500 font-medium">{order[0].neworder} new </span>
+                <span className="text-500">since last visit</span>
             </div>
-            <div className="col-12 lg:col-6 xl:col-3">
+        </div>
+            <div className="col-12 lg:col-6 xl:col-4">
                 <div className="card mb-0">
                     <div className="flex justify-content-between mb-3">
                         <div>
-                            <span className="block text-500 font-medium mb-3">Revenue</span>
-                            <div className="text-900 font-medium text-xl">$2.100</div>
+                            <span className="block text-500 font-medium mb-3">Revenue in month</span>
+                            <div className="text-900 font-medium text-xl">{revenue[0].Inmonth} VND </div>
                         </div>
                         <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
                             <i className="pi pi-map-marker text-orange-500 text-xl"/>
                         </div>
                     </div>
-                    <span className="text-green-500 font-medium">%52+ </span>
-                    <span className="text-500">since last week</span>
+                    <span className="text-green-500 font-medium">{revenue[0].Lastmonth} VND </span>
+                    <span className="text-500">Last month</span>
                 </div>
             </div>
-            <div className="col-12 lg:col-6 xl:col-3">
+            <div className="col-12 lg:col-6 xl:col-4">
                 <div className="card mb-0">
                     <div className="flex justify-content-between mb-3">
                         <div>
                             <span className="block text-500 font-medium mb-3">Customers</span>
-                            <div className="text-900 font-medium text-xl">28441</div>
+                            <div className="text-900 font-medium text-xl">{customer[0].Customer}</div>
                         </div>
                         <div className="flex align-items-center justify-content-center bg-cyan-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
                             <i className="pi pi-inbox text-cyan-500 text-xl"/>
                         </div>
                     </div>
-                    <span className="text-green-500 font-medium">520  </span>
+                    <span className="text-green-500 font-medium">{customer[0].NewRegister} </span>
                     <span className="text-500">newly registered</span>
                 </div>
             </div>
-            <div className="col-12 lg:col-6 xl:col-3">
-                <div className="card mb-0">
-                    <div className="flex justify-content-between mb-3">
-                        <div>
-                            <span className="block text-500 font-medium mb-3">Comments</span>
-                            <div className="text-900 font-medium text-xl">152 Unread</div>
-                        </div>
-                        <div className="flex align-items-center justify-content-center bg-purple-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
-                            <i className="pi pi-comment text-purple-500 text-xl"/>
-                        </div>
-                    </div>
-                    <span className="text-green-500 font-medium">85 </span>
-                    <span className="text-500">responded</span>
-                </div>
-            </div>
+            
 
             <div className="col-12 xl:col-6">
                 <div className="card">
                     <h5>Recent Sales</h5>
-                    <DataTable value={products} rows={5} paginator responsiveLayout="scroll">
+                    <DataTable value={sales} rows={5} paginator responsiveLayout="scroll">
                     <Column
               header="Hình ảnh"
               body={imageBodyTemplate}
@@ -221,78 +323,9 @@ const Dashboard = (props) => {
                         </div>
                     </div>
                     <ul className="list-none p-0 m-0">
-                        <li className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                            <div>
-                                <span className="text-900 font-medium mr-2 mb-1 md:mb-0">Space T-Shirt</span>
-                                <div className="mt-1 text-600">Clothing</div>
-                            </div>
-                            <div className="mt-2 md:mt-0 flex align-items-center">
-                                <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{height: '8px'}}>
-                                    <div className="bg-orange-500 h-full" style={{width: '50%'}}/>
-                                </div>
-                                <span className="text-orange-500 ml-3 font-medium">%50</span>
-                            </div>
-                        </li>
-                        <li className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                            <div>
-                                <span className="text-900 font-medium mr-2 mb-1 md:mb-0">Portal Sticker</span>
-                                <div className="mt-1 text-600">Accessories</div>
-                            </div>
-                            <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                                <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{height: '8px'}}>
-                                    <div className="bg-cyan-500 h-full" style={{width: '16%'}}/>
-                                </div>
-                                <span className="text-cyan-500 ml-3 font-medium">%16</span>
-                            </div>
-                        </li>
-                        <li className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                            <div>
-                                <span className="text-900 font-medium mr-2 mb-1 md:mb-0">Supernova Sticker</span>
-                                <div className="mt-1 text-600">Accessories</div>
-                            </div>
-                            <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                                <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{height: '8px'}}>
-                                    <div className="bg-pink-500 h-full" style={{width: '67%'}}/>
-                                </div>
-                                <span className="text-pink-500 ml-3 font-medium">%67</span>
-                            </div>
-                        </li>
-                        <li className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                            <div>
-                                <span className="text-900 font-medium mr-2 mb-1 md:mb-0">Wonders Notebook</span>
-                                <div className="mt-1 text-600">Office</div>
-                            </div>
-                            <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                                <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{height: '8px'}}>
-                                    <div className="bg-green-500 h-full" style={{width: '35%'}}/>
-                                </div>
-                                <span className="text-green-500 ml-3 font-medium">%35</span>
-                            </div>
-                        </li>
-                        <li className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                            <div>
-                                <span className="text-900 font-medium mr-2 mb-1 md:mb-0">Mat Black Case</span>
-                                <div className="mt-1 text-600">Accessories</div>
-                            </div>
-                            <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                                <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{height: '8px'}}>
-                                    <div className="bg-purple-500 h-full" style={{width: '75%'}}/>
-                                </div>
-                                <span className="text-purple-500 ml-3 font-medium">%75</span>
-                            </div>
-                        </li>
-                        <li className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                            <div>
-                                <span className="text-900 font-medium mr-2 mb-1 md:mb-0">Robots T-Shirt</span>
-                                <div className="mt-1 text-600">Clothing</div>
-                            </div>
-                            <div className="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                                <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{height: '8px'}}>
-                                    <div className="bg-teal-500 h-full" style={{width: '40%'}}/>
-                                </div>
-                                <span className="text-teal-500 ml-3 font-medium">%40</span>
-                            </div>
-                        </li>
+                        {renderListSaling()}
+                        
+                        
                     </ul>
                 </div>
             </div>
@@ -312,43 +345,12 @@ const Dashboard = (props) => {
                         </div>
                     </div>
 
-                    <span className="block text-600 font-medium mb-3">TODAY</span>
-                    <ul className="p-0 mx-0 mt-0 mb-4 list-none">
-                        <li className="flex align-items-center py-2 border-bottom-1 surface-border">
-                            <div className="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
-                                <i className="pi pi-dollar text-xl text-blue-500"/>
-                            </div>
-                            <span className="text-900 line-height-3">Richard Jones
-						<span className="text-700"> has purchased a blue t-shirt for <span className="text-blue-500">79$</span></span>
-					</span>
-                        </li>
-                        <li className="flex align-items-center py-2">
-                            <div className="w-3rem h-3rem flex align-items-center justify-content-center bg-orange-100 border-circle mr-3 flex-shrink-0">
-                                <i className="pi pi-download text-xl text-orange-500"/>
-                            </div>
-                            <span className="text-700 line-height-3">Your request for withdrawal of <span className="text-blue-500 font-medium">2500$</span> has been initiated.</span>
-                        </li>
+                    <span className="block text-600 font-medium mb-3">WAIT FOR ACCEPT</span>
+                    <ul className="p-0 mx-0 mt-0 mb-4 list-none" >
+                    {renderNotification()}
                     </ul>
 
-                    <span className="block text-600 font-medium mb-3">YESTERDAY</span>
-                    <ul className="p-0 m-0 list-none">
-                        <li className="flex align-items-center py-2 border-bottom-1 surface-border">
-                            <div className="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
-                                <i className="pi pi-dollar text-xl text-blue-500"/>
-                            </div>
-                            <span className="text-900 line-height-3">Keyser Wick
-						<span className="text-700"> has purchased a black jacket for <span className="text-blue-500">59$</span></span>
-					</span>
-                        </li>
-                        <li className="flex align-items-center py-2 border-bottom-1 surface-border">
-                            <div className="w-3rem h-3rem flex align-items-center justify-content-center bg-pink-100 border-circle mr-3 flex-shrink-0">
-                                <i className="pi pi-question text-xl text-pink-500"/>
-                            </div>
-                            <span className="text-900 line-height-3">Jane Davis
-						<span className="text-700"> has posted a new questions about your product.</span>
-					</span>
-                        </li>
-                    </ul>
+                  
                 </div>
                 <div className="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3"
                      style={{borderRadius: '1rem', background: 'linear-gradient(0deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.5)), linear-gradient(92.54deg, #1C80CF 47.88%, #FFFFFF 100.01%)'}}>

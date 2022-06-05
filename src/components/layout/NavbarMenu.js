@@ -20,13 +20,13 @@ const NavbarMenu = () => {
 	return (
 		<Navbar expand='lg' bg='primary' variant='dark' className='shadow'>
 			<Navbar.Brand className='font-weight-bolder text-white'>
-				<img
+				{/* <img
 					src={learnItLogo}
 					alt='learnItLogo'
 					width='32'
 					height='32'
 					className='mr-2'
-				/>
+				/> */}
 				LearnIt
 			</Navbar.Brand>
 

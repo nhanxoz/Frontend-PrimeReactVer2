@@ -16,7 +16,7 @@ export const AppTopbar = (props) => {
   const logout = () => logoutUser();
   return (
     <div className="layout-topbar">
-      <Link to="/" className="layout-topbar-logo">
+      {/* <Link to="/" className="layout-topbar-logo">
         <img
           src={
             props.layoutColorMode === "light"
@@ -26,7 +26,7 @@ export const AppTopbar = (props) => {
           alt="logo"
         />
         <span>Connect with SpringBoot</span>
-      </Link>
+      </Link> */}
 
       <button
         type="button"
