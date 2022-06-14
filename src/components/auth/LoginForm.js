@@ -13,13 +13,13 @@ function LoginForm() {
 
   // Local state
   const [loginForm, setLoginForm] = useState({
-    Email: "",
-    Password: "",
+    username: "",
+    password: "",
   })
 
   const [alert, setAlert] = useState(null)
 
-  const { Email, Password } = loginForm
+  const { username, password } = loginForm
 
   const onChangeLoginForm = (event) => setLoginForm({ ...loginForm, [event.target.name]: event.target.value })
 
@@ -44,8 +44,8 @@ function LoginForm() {
                     <div class="form-container">
                       <h2>Login</h2>
                     <Form  class="form-container" onSubmit={login}>
-                        <input type="text" placeholder="Email address" autoFocus name="Email" required value={Email} onChange={onChangeLoginForm}/>
-                        <input type="password" placeholder="Password" name ="Password" required value={Password} onChange={onChangeLoginForm}/>
+                        <input type="text" placeholder="username" autoFocus name="username" required value={username} onChange={onChangeLoginForm}/>
+                        <input type="password" placeholder="password" name ="password" required value={password} onChange={onChangeLoginForm}/>
                         <button class="btn-login" type ="submit">Login</button>
                        
                     </Form>

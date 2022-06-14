@@ -16,14 +16,10 @@ import { FoodCategoryService } from "../service/FoodCategoryService";
 
 const EmptyPage = () => {
   let emptyFoodCategory = {
-    ID: null,
-    Name: "",
-    Alias: null,
-    CreatedDate: null,
-    CreatedBy: null,
-    UpdateDate: null,
-    UpdateBy: null,
-    Status:null
+    id: null,
+    name: "",
+    alias: null,
+    status:null
   };
   //const [foodcategorys, setFoodCategorys] = useState([]);
   const [foodcategorys, setFoodCategorys] = useState(null);
@@ -42,6 +38,7 @@ const EmptyPage = () => {
     const foodCategoryService = new FoodCategoryService();
     foodCategoryService.getFoodCategory().then((data) => {
       setFoodCategorys(data);
+      console.log(data)
     });
 
     
@@ -78,12 +75,15 @@ const EmptyPage = () => {
   const saveFoodCategory = () => {
     setSubmitted(true);
 
-    if (foodcategory.Name.trim()) {
+    if (foodcategory.name.trim()) {
       let _foodcategorys = [...foodcategorys];
       let _foodcategory = { ...foodcategory };
-      if (foodcategory.ID) {
-        const index = findIndexById(foodcategory.ID);
-
+      if (foodcategory.id) {
+        const index = findIndexById(foodcategory.id);
+        console.log(foodcategorys)
+        console.log(foodcategory.id)
+        console.log(index)
+        console.log(_foodcategory)
         _foodcategorys[index] = _foodcategory;
         const foodCategoryService = new FoodCategoryService();
         foodCategoryService.updateFoodCategory(_foodcategory);
@@ -94,7 +94,7 @@ const EmptyPage = () => {
           life: 3000,
         });
       } else {
-        _foodcategory.ID = foodcategorys.reduce((a, b) => Math.max(a, b.ID), 0) + 1;
+        _foodcategory.id = foodcategorys.reduce((a, b) => Math.max(a, b.id), 0) + 1;
       
     
         _foodcategorys.push(_foodcategory);
@@ -146,7 +146,7 @@ const EmptyPage = () => {
   const findIndexById = (id) => {
     let index = -1;
     for (let i = 0; i < foodcategorys.length; i++) {
-      if (foodcategorys[i].ID === id) {
+      if (foodcategorys[i].id === id) {
         index = i;
         break;
       }
@@ -167,8 +167,8 @@ const EmptyPage = () => {
   const onChangeValue=(event) => {
     console.log(event.target.value);
     let _foodcategory = { ...foodcategory };
-     _foodcategory["Status"]=event.target.value;
-     console.log(_foodcategory["Status"])
+     _foodcategory["status"]=event.target.value;
+     console.log(_foodcategory["status"])
     setFoodCategory(_foodcategory);
     
   }
@@ -178,9 +178,9 @@ const EmptyPage = () => {
       <div onChange={onChangeValue}>
         <div><label>Trạng thái</label> <h2>  </h2></div>
         <div>
-        <input type="radio" value="1" name="Status" /> Còn món
+        <input type="radio" value="1" name="status" /> Còn món
         <h2>  </h2>
-        <input type="radio" value="0" name="Status" /> Hết món
+        <input type="radio" value="0" name="status" /> Hết món
         </div>
       </div>
     );
@@ -197,7 +197,7 @@ const EmptyPage = () => {
     console.log(selectedFoodCategorys);
     const foodCategoryService = new FoodCategoryService();
     for (var i in selectedFoodCategorys) {
-      foodCategoryService.deleteFoodCategory(selectedFoodCategorys[i].ID);
+      foodCategoryService.deleteFoodCategory(selectedFoodCategorys[i].id);
     }
 
     let _foodcategorys = foodcategorys.filter((val) => !selectedFoodCategorys.includes(val));
@@ -288,7 +288,7 @@ const EmptyPage = () => {
     return (
       <>
         <span className="p-column-title">Mã danh mục</span>
-        {rowData.ID}
+        {rowData.id}
       </>
     );
   };
@@ -297,48 +297,19 @@ const EmptyPage = () => {
     return (
       <>
         <span className="p-column-title">Tên danh mục</span>
-        {rowData.Name}
+        {rowData.name}
       </>
     );
   };
 
-  const CreatedDateBodyTemplate = (rowData) => {
-    return (
-      <>
-        <span className="p-column-title">Ngày tạo</span>
-        {Date(rowData.CreatedDate)}
-        
-      </>
-    );
-  };
-
-  const CreateByBodyTemplate = (rowData) => {
-    return (
-      <>
-        <span className="p-column-title">Người tạo</span>
-        {rowData.CreatedBy}
-      </>
-    );
-  };
-  const UpdateDateBodyTemplate = (rowData) => {
-    return (
-      <>
-        <span className="p-column-title">Ngày cập nhật</span>
-        {rowData.UpdateDate}
-      </>
-    );};
-    const UpdateByBodyTemplate = (rowData) => {
-      return (
-        <>
-          <span className="p-column-title">Ngày cập nhật</span>
-          {rowData.UpdateBy}
-        </>
-      );};
+  
+  
+    
       const StatusBodyTemplate = (rowData) => {
         return (
           <>
-            <span className="p-column-title">Ngày cập nhật</span>
-            {formatCurrency(rowData.Status)}
+            <span className="p-column-title">Trạng thái</span>
+            {formatCurrency(rowData.status)}
           </>
         );
   };
@@ -450,7 +421,7 @@ const EmptyPage = () => {
             value={foodcategorys}
             selection={selectedFoodCategorys}
             onSelectionChange={(e) => setSelectedFoodCategorys(e.value)}
-            dataKey="ID"
+            dataKey="id"
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
@@ -467,7 +438,7 @@ const EmptyPage = () => {
               headerStyle={{ width: "3rem" }}
             ></Column>
             <Column
-              field="ID"
+              field="id"
               header="Mã danh mục"
               sortable
               body={FoodCategoryIDBodyTemplate}
@@ -475,7 +446,7 @@ const EmptyPage = () => {
             ></Column>
           
             <Column
-              field="Name"
+              field="name"
               header="Tên danh mục"
               body={NameBodyTemplate}
               sortable
@@ -511,7 +482,7 @@ const EmptyPage = () => {
               headerStyle={{ width: "7%", minWidth: "7rem" }}
             ></Column> */}
             <Column
-              field="Status"
+              field="status"
               header="Trạng thái"
               body={StatusBodyTemplate}
               
@@ -535,7 +506,7 @@ const EmptyPage = () => {
               <label htmlFor="name">Tên danh mục</label>
               <InputText
                 id="name"
-                value={foodcategory.Name}
+                value={foodcategory.name}
                 onChange={(e) => onInputChange(e, "Name")}
                 required
                 autoFocus
@@ -543,7 +514,7 @@ const EmptyPage = () => {
                   "p-invalid": submitted && !foodcategory.Name,
                 })}
               />
-              {submitted && !foodcategory.Name && (
+              {submitted && !foodcategory.name && (
                 <small className="p-invalid">Yêu cầu nhập tên danh mục</small>
               )}
             </div>
@@ -570,7 +541,7 @@ const EmptyPage = () => {
               />
               {foodcategory && (
                 <span>
-                  Bạn muốn xóa món ăn này?<b>{foodcategory.Name}</b>?
+                  Bạn muốn xóa món ăn này?<b>{foodcategory.name}</b>?
                 </span>
               )}
             </div>

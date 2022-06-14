@@ -14,16 +14,40 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { ProductService } from "../service/ProductService";
 
+const catarr = [{
+  "name": "Bữa trưa",
+  "id": 1,
+  "alias": "buatrua",
+  "status": 1
+}, {
+  "name": "Tráng miệng",
+  "id": 2,
+  "alias": "trangmieng",
+  "status": 1
+},{
+  "name": "Đồ uống",
+  "id": 3,
+  "alias": "douong",
+  "status": 1
+},{
+  "name": "Bữa sáng",
+  "id": 4,
+  "alias": "buasang",
+  "status": 1
+}]
+
+
 const Crud = () => {
   let emptyFood = {
-    ID: null,
-    Name: "",
-    Image: null,
-    OriginPrice: 0,
-    PromotionPrice: 0,
-    CategoryID: 0,
-    Description: "",
+    id: null,
+    name: "",
+    alias: null,
+    originPrice: 0,
+    promotionPrice: 0,
+    category: {name:null, id:1, alias:null, status:1},
+    description: "",
   };
+  const [curC, setC] = useState(1);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState(null);
   const [productDialog, setProductDialog] = useState(false);
@@ -44,7 +68,7 @@ const Crud = () => {
     });
 
     productService.getCategories().then((data) => {
-      setCategories(data.map((i, k) => i.Name));
+      setCategories(data.map((i, k) => i.name));
     });
   }, []);
 
@@ -101,15 +125,16 @@ const Crud = () => {
   const saveProduct = () => {
     setSubmitted(true);
 
-    if (product.Name.trim()) {
+    if (product.name.trim()) {
       let _products = [...products];
       let _product = { ...product };
-      if (product.ID) {
-        const index = findIndexById(product.ID);
-
+      if (product.id) {
+        const index = findIndexById(product.id);
+        
         _products[index] = _product;
         const productService = new ProductService();
         productService.updateFood(_product);
+        console.log(_product);
         toast.current.show({
           severity: "success",
           summary: "Successful",
@@ -117,12 +142,14 @@ const Crud = () => {
           life: 3000,
         });
       } else {
-        _product.ID = products.reduce((a, b) => Math.max(a, b.ID), 0) + 1;
-        _product.Alias = removeAccents(_product.Name)
+        _product.id = products.reduce((a, b) => Math.max(a, b.id), 0) + 1;
+        _product.alias = removeAccents(_product.name)
         _product.Image = uri;
+       
         _products.push(_product);
         const productService = new ProductService();
         productService.saveFood(_product);
+        console.log(_product)
         toast.current.show({
           severity: "success",
           summary: "Successful",
@@ -152,8 +179,8 @@ const Crud = () => {
   const deleteProduct = () => {
     const productService = new ProductService();
 
-    productService.deleteFood(product.ID);
-    let _products = products.filter((val) => val.id !== product.ID);
+    productService.deleteFood(product.id);
+    let _products = products.filter((val) => val.id !== product.id);
     setProducts(_products);
     setDeleteProductDialog(false);
     setProduct(emptyFood);
@@ -169,7 +196,7 @@ const Crud = () => {
   const findIndexById = (id) => {
     let index = -1;
     for (let i = 0; i < products.length; i++) {
-      if (products[i].ID === id) {
+      if (products[i].id === id) {
         index = i;
         break;
       }
@@ -200,7 +227,7 @@ const Crud = () => {
     console.log(selectedProducts);
     const productService = new ProductService();
     for (var i in selectedProducts) {
-      productService.deleteFood(selectedProducts[i].ID);
+      productService.deleteFood(selectedProducts[i].id);
     }
 
     let _products = products.filter((val) => !selectedProducts.includes(val));
@@ -218,7 +245,10 @@ const Crud = () => {
 
   const onCategoryChange = (e) => {
     let _product = { ...product };
-    _product["CategoryID"] = e.value;
+    
+    _product["category"] = catarr[e.value-1];
+    console.log(_product);
+    setC(e.value-1)
     setProduct(_product);
   };
 
@@ -234,7 +264,7 @@ const Crud = () => {
   const myUploader = (file) => {
     const productService = new ProductService();
 
-    productService. uploadImageFood(file.files[0], removeAccents(product.Name)).then((data) => setUri(data));
+    productService. uploadImageFood(file.files[0], removeAccents(product.name)).then((data) => setUri(data));
   };
   const onInputNumberChange = (e, name) => {
     const val = e.value || 0;
@@ -294,7 +324,7 @@ const Crud = () => {
           name={index}
           value={index + 1}
           onChange={onCategoryChange}
-          checked={product.CategoryID === index + 1}
+          checked={product.categoryID === index + 1}
         />
         <label htmlFor={index}>{value}</label>
       </div>
@@ -312,7 +342,7 @@ const Crud = () => {
     return (
       <>
         <span className="p-column-title">ID</span>
-        {rowData.ID}
+        {rowData.id}
       </>
     );
   };
@@ -321,7 +351,7 @@ const Crud = () => {
     return (
       <>
         <span className="p-column-title">Name</span>
-        {rowData.Name}
+        {rowData.name}
       </>
     );
   };
@@ -332,8 +362,8 @@ const Crud = () => {
         <span className="p-column-title">Image</span>
 
         <img
-          src={`http://localhost:1486/Content/food/` + rowData.Alias + `_1.jpg`}
-          alt={rowData.image}
+          src={`http://localhost:8080/downloadFile/` + rowData.alias + `_1.jpg`}
+          alt={rowData.alias}
           className="shadow-2"
           width="100"
         />
@@ -345,7 +375,7 @@ const Crud = () => {
     return (
       <>
         <span className="p-column-title">Giá gốc</span>
-        {formatCurrency(rowData.OriginPrice)}
+        {formatCurrency(rowData.originPrice)}
       </>
     );
   };
@@ -353,7 +383,7 @@ const Crud = () => {
     return (
       <>
         <span className="p-column-title">Giá khuyến mãi</span>
-        {formatCurrency(rowData.PromotionPrice)}
+        {formatCurrency(rowData.promotionPrice)}
       </>
     );
   };
@@ -362,7 +392,8 @@ const Crud = () => {
     return (
       <>
         <span className="p-column-title">Categories</span>
-        {categories[rowData.CategoryID - 1]}
+        {/* {categories[rowData.categoryID - 1]} */}
+        {rowData.category!=null?rowData.category["name"] : "Chưa phân loại"}
       </>
     );
   };
@@ -371,7 +402,7 @@ const Crud = () => {
     return (
       <>
         <span className="p-column-title">Mô tả</span>
-        {rowData.Description}
+        {rowData.description}
       </>
     );
   };
@@ -481,7 +512,7 @@ const Crud = () => {
             value={products}
             selection={selectedProducts}
             onSelectionChange={(e) => setSelectedProducts(e.value)}
-            dataKey="ID"
+            dataKey="id"
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
@@ -498,14 +529,14 @@ const Crud = () => {
               headerStyle={{ width: "3rem" }}
             ></Column>
             <Column
-              field="ID"
+              field="id"
               header="ID"
               sortable
               body={IDBodyTemplate}
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
             <Column
-              field="Name"
+              field="name"
               header="Tên món"
               sortable
               body={nameBodyTemplate}
@@ -517,14 +548,14 @@ const Crud = () => {
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
             <Column
-              field="OriginPrice"
+              field="originPrice"
               header="Giá gốc"
               body={originPriceBodyTemplate}
               sortable
               headerStyle={{ width: "14%", minWidth: "8rem" }}
             ></Column>
             <Column
-              field="PromotionPrice"
+              field="promotionPrice"
               header="Giá khuyến mãi"
               body={promotionPriceBodyTemplate}
               sortable
@@ -573,15 +604,15 @@ const Crud = () => {
               <label htmlFor="name">Tên món ăn</label>
               <InputText
                 id="name"
-                value={product.Name}
-                onChange={(e) => onInputChange(e, "Name")}
+                value={product.name}
+                onChange={(e) => onInputChange(e, "name")}
                 required
                 autoFocus
                 className={classNames({
-                  "p-invalid": submitted && !product.Name,
+                  "p-invalid": submitted && !product.name,
                 })}
               />
-              {submitted && !product.Name && (
+              {submitted && !product.name && (
                 <small className="p-invalid">Yêu cầu nhập tên món ăn</small>
               )}
             </div>
@@ -613,9 +644,9 @@ const Crud = () => {
                 <label htmlFor="price">Price</label>
                 <InputNumber
                   id="price"
-                  value={product.PromotionPrice}
+                  value={product.promotionPrice}
                   onValueChange={(e) =>
-                    onInputNumberChange(e, "PromotionPrice")
+                    onInputNumberChange(e, "promotionPrice")
                   }
                   mode="currency"
                   currency="VND"
@@ -623,11 +654,11 @@ const Crud = () => {
                 />
               </div>
               <div className="field col">
-                <label htmlFor="OriginPrice">Giá gốc</label>
+                <label htmlFor="originPrice">Giá gốc</label>
                 <InputNumber
-                  id="OriginPrice"
-                  value={product.OriginPrice}
-                  onValueChange={(e) => onInputNumberChange(e, "OriginPrice")}
+                  id="originPrice"
+                  value={product.originPrice}
+                  onValueChange={(e) => onInputNumberChange(e, "originPrice")}
                   mode="currency"
                   currency="VND"
                   locale="vi-VN"

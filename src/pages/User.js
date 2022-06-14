@@ -16,14 +16,10 @@ import { UserService } from "../service/UserService";
 
 const User = () => {
   let emptyUser = {
-    Id: 0,
-    Image:null,
-    FullName: "",
-    Address: "",
-    City: "",
-    Country:"",
-    BirthDay:"",
-    Career:"",
+    id: 0,
+    fullName:null,
+    address:null,
+    email:null,
   };
   let emptyUserRole = {
     IDUser:0,
@@ -116,7 +112,7 @@ const User = () => {
   const deleteUser = () => {
     const userService = new UserService();
 
-    userService.deleteUser(user.ID);
+    userService.deleteUser(user.id);
     let _users = users.filter((val) => val.id !== user.id);
     setUsers(_users);
     setDeleteUserDialog(false);
@@ -133,7 +129,7 @@ const User = () => {
   const findIndexById = (id) => {
     let index = -1;
     for (let i = 0; i < users.length; i++) {
-      if (users[i].ID === id) {
+      if (users[i].id === id) {
         index = i;
         break;
       }
@@ -164,7 +160,7 @@ const User = () => {
     console.log(selectedUsers);
     const userService = new UserService();
     for (var i in selectedUsers) {
-      userService.deleteUser(selectedUsers[i].Id);
+      userService.deleteUser(selectedUsers[i].id);
     }
 
     let _users = users.filter((val) => !selectedUsers.includes(val));
@@ -251,7 +247,7 @@ const User = () => {
     return (
       <>
         <span className="p-column-title">Mã người dùng</span>
-        {rowData.Id}
+        {rowData.id}
       </>
     );
   };
@@ -259,7 +255,7 @@ const User = () => {
     return (
       <>
         <span className="p-column-title">Họ tên</span>
-        {rowData.FullName}
+        {rowData.fullName}
       </>
     );
   };
@@ -268,7 +264,7 @@ const User = () => {
     return (
       <>
         <span className="p-column-title">Địa chỉ</span>
-        {rowData.Address}
+        {rowData.address}
       </>
     );
   };
@@ -288,11 +284,11 @@ const User = () => {
     );
   };
 
-  const cityBodyTemplate = (rowData) => {
+  const emailBodyTemplate = (rowData) => {
     return (
       <>
-        <span className="p-column-title">Thành phố</span>
-        {rowData.City}
+        <span className="p-column-title">Email</span>
+        {rowData.email}
       </>
     );
   };
@@ -456,14 +452,14 @@ const User = () => {
           >
              
             <Column
-              field="Id"
+              field="id"
               header="Mã người dùng"
               sortable
               body={IdBodyTemplate}
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
             <Column
-              field="FullName"
+              field="fullName"
               header="Họ tên"
               sortable
               body={fullnameBodyTemplate}
@@ -476,40 +472,21 @@ const User = () => {
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column> */}
             <Column
-              field="Address"
+              field="address"
               header="Địa chỉ"
               body={addressBodyTemplate}
               
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
             <Column
-              field="City"
-              header="Thành phố"
-              body={cityBodyTemplate}
+              field="email"
+              header="Email"
+              body={emailBodyTemplate}
               sortable
               headerStyle={{ width: "14%", minWidth: "8rem" }}
             ></Column>
-            <Column
-              field="Country"
-              header="Quê quán"
-              body={countryBodyTemplate}
-              sortable
-              headerStyle={{ width: "14%", minWidth: "8rem" }}
-            ></Column>
-            <Column
-              field="BirthDay"
-              header="Ngày sinh"
-              body={birthdayBodyTemplate}
-              sortable
-              headerStyle={{ width: "14%", minWidth: "8rem" }}
-            ></Column>
-            <Column
-              field="Career"
-              header="Nghề nghiệp"
-              body={careerBodyTemplate}
-              sortable
-              headerStyle={{ width: "14%", minWidth: "8rem" }}
-            ></Column>
+           
+            
             {/* <Column body={actionBodyTemplate}></Column> */}
           </DataTable>
 

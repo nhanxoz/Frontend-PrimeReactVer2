@@ -8,7 +8,7 @@ import { useContext } from "react";
 export const AppTopbar = (props) => {
   const {
     authState: {
-      user: { username },
+      user: username ,
     },
     logoutUser,
   } = useContext(AuthContext);

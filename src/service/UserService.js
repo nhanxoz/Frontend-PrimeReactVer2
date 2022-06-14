@@ -1,22 +1,24 @@
 import axios from "axios";
-
+import { access_token } from "../contexts/constants";
 export class UserService {
   getUser() {
-    axios.defaults.withCredentials = true;
+        
 
     return axios
-      .get("http://localhost:1486/api/admin/users", { withCredentials: true })
+      .get("http://localhost:8080/api/admin/users",{  headers: {
+        'Authorization': `Bearer ${access_token}`
+      }}   )
       .then((res) => res.data.data);
   }
   
   deleteUser(id) {
-    axios.defaults.withCredentials = true;
+        
     const urlDelete = `http://localhost:1486/api/admin/users?id=` + String(id);
 
     return axios.delete(urlDelete);
   }
   saveUser(user) {
-    axios.defaults.withCredentials = true;
+        
     return axios.post("http://localhost:1486/api/admin/user", user, {
       headers: {
         "Content-Type": "application/json",
@@ -26,7 +28,7 @@ export class UserService {
   }
 
   updateUser(user) {
-    axios.defaults.withCredentials = true;
+        
     return axios.put("http://localhost:8080/api/admin/order", user, {
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +36,7 @@ export class UserService {
     });
   }
   uploadImageUser(event) {
-    axios.defaults.withCredentials = true;
+        
     let formData = new FormData();
     formData.append("file", event);
 

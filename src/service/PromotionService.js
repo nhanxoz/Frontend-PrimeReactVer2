@@ -1,22 +1,24 @@
 import axios from "axios";
-
+import { access_token } from "../contexts/constants";
 export class PromotionService {
   getPromotion() {
-    axios.defaults.withCredentials = true;
+        
 
     return axios
-      .get("http://localhost:1486/api/admin/promotion", { withCredentials: true })
+      .get("http://localhost:8080/api/admin/promotions",  {  headers: {
+        'Authorization': `Bearer ${access_token}`
+      }}  )
       .then((res) => res.data.data);
   }
   
   deletePromotion(id) {
-    axios.defaults.withCredentials = true;
+        
     const urlDelete = `http://localhost:1486/api/admin/delete?id=` + String(id);
 
     return axios.delete(urlDelete);
   }
   savePromotion(promotion) {
-    axios.defaults.withCredentials = true;
+        
     return axios.post("http://localhost:1486/api/admin/promotion", promotion, {
       headers: {
         "Content-Type": "application/json",
@@ -26,7 +28,7 @@ export class PromotionService {
   }
 
   updatePromotion(promotion) {
-    axios.defaults.withCredentials = true;
+        
     return axios.put("http://localhost:8080/api/admin/promotion", promotion, {
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +36,7 @@ export class PromotionService {
     });
   }
   uploadImagePromotion(event) {
-    axios.defaults.withCredentials = true;
+        
     let formData = new FormData();
     formData.append("file", event);
 

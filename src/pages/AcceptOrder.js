@@ -17,12 +17,12 @@ import { DashboardService } from "../service/DashboardService";
 
 const AcceptOrder = () => {
     let emptyOrder = {
-        ID: 0, FullName: '', Status: 0, 
-        Foods: [{ Name: '', Image: '', OriginPrice: 0, PromotionPrice: 0, Size: 0, Topping: 0, BoundingPrice: 0, Quantity: 0, Alias: ''}]
+        id: 0, customerName: '', status: 0, 
+        order_food: [{quantity:0,food:{ name: '', image: '', originPrice: 0, promotionPrice: 0, alias: ''}}]
 
     };
     //const [orders, setOrders] = useState([]);
-    const [cart, setCart] = useState([{ ID: 0, FullName: '', Status: 0, Foods: [{ Name: '', Image: '', OriginPrice: 0, PromotionPrice: 0, Size: 0, Topping: 0, BoundingPrice: 0, Quantity: 0, Alias: '' }] }]);
+    const [cart, setCart] = useState([{ id: 0, customerName: '', status: 0,  order_food: [{quantity:0,food:{ name: '', image: '', originPrice: 0, promotionPrice: 0, alias: ''}}] }]);
 
     const [orders, setOrders] = useState(null);
     const [orderDialog, setOrderDialog] = useState(false);
@@ -40,11 +40,12 @@ const AcceptOrder = () => {
         const dashboardService = new DashboardService;
         dashboardService.getcart().then((data) => {
             setCart(data);
+            console.log(data);
         });
 
-
-
     }, []);
+    console.log(cart);
+    
 
     const formatCurrency = (value) => {
         if (value == 0) return String("Chờ duyệt");
@@ -62,8 +63,8 @@ const AcceptOrder = () => {
     const onChangeValue = (event) => {
         console.log(event.target.value);
         let _order = { ...order };
-        _order["Status"] = event.target.value;
-        console.log(_order["Status"])
+        _order["status"] = event.target.value;
+        console.log(_order["status"])
         setOrder(_order);
 
     }
@@ -102,10 +103,10 @@ const AcceptOrder = () => {
         return <div>
             <DataTable
                 ref={dt}
-                value={item.Foods}
+                value={item.order_food}
                 selection={selectedOrders}
                 onSelectionChange={(e) => setSelectedOrders(e.value)}
-                dataKey="ID"
+                dataKey="id"
                 paginator
                 rows={10}
                 rowsPerPageOptions={[5, 10, 25]}
@@ -117,24 +118,17 @@ const AcceptOrder = () => {
                 header={header}
                 responsiveLayout="scroll"
             >
+               
                 <Column
                     selectionMode="multiple"
                     headerStyle={{ width: "3rem" }}
                 ></Column>
                 <Column
-                    field="Name"
+                    field="name"
                     header="Tên món"
                     sortable
-                    body={item.Name}
+                    body={NameBodyTemplate}
                     headerStyle={{ width: "7%", minWidth: "7rem" }}
-                ></Column>
-
-                <Column
-                    field="Size"
-                    header="Size"
-                    body={item.Size}
-                    sortable
-                    headerStyle={{ width: "14%", minWidth: "10rem" }}
                 ></Column>
                 <Column
                     field="Image"
@@ -144,21 +138,21 @@ const AcceptOrder = () => {
                     headerStyle={{ width: "14%", minWidth: "10rem" }}
                 ></Column>
                 <Column
-                    field="OriginPrice"
+                    field="originPrice"
                     header="Giá gốc"
                     body={OriginPriceBodyTemplate}
 
                     headerStyle={{ width: "14%", minWidth: "10rem" }}
                 ></Column>
                 <Column
-                    field="PromotionPrice"
+                    field="promotionPrice"
                     header="Giá khuyến mãi"
                     body={PromotionPriceBodyTemplate}
 
                     headerStyle={{ width: "14%", minWidth: "10rem" }}
                 ></Column>
                 <Column
-                    field="Quantity"
+                    field="quantity"
                     header="Số lượng"
                     body={QuantityBodyTemplate}
 
@@ -167,7 +161,7 @@ const AcceptOrder = () => {
 
 
             </DataTable>
-        </div>
+        </div>      
     }
 
     const renderBody = () => {
@@ -176,9 +170,9 @@ const AcceptOrder = () => {
             return <li className="" key={index}>
 
                 <span className="text-900 line-height-3">
-                    Mã đơn hàng: {item.ID}
-                    <span className="text-2000"> Tên khách hàng: {item.FullName} </span>
-                    <span className="text-blue-500">Trạng thái: {formatStatus(item.Status)}       </span>
+                    Mã đơn hàng: {item.id}
+                    <span className="text-2000"> Tên khách hàng: {item.customerName} </span>
+                    <span className="text-blue-500">Trạng thái: {formatStatus(item.status)}       </span>
                     <i class="pi pi-pencil" onClick={() => editOrder(item)}>
 
                     </i>
@@ -206,13 +200,13 @@ const AcceptOrder = () => {
        
         //   let _orders = [...orders];
            let _order = { ...order };
-           const index = findIndexById(_order.ID);
+           const index = findIndexById(_order.id);
            let _cart = {...cart};
-           _cart[index].Status=_order.Status;
+           _cart[index].status=_order.status;
            
            console.log(_order);
             const orderService = new OrderService();
-            orderService.EditStatus(_order.ID, _order.Status);
+            orderService.EditStatus(_order.status,_order.id);
             toast.current.show({
               severity: "success",
               summary: "Successful",
@@ -244,8 +238,8 @@ const AcceptOrder = () => {
 
     const deleteOrder = () => {
         const orderService = new OrderService();
-        orderService.deleteOrder(order.ID);
-        let _orders = orders.filter((val) => val.id !== order.ID);
+        orderService.deleteOrder(order.id);
+        let _orders = orders.filter((val) => val.id !== order.id);
         setOrders(_orders);
         setDeleteOrderDialog(false);
         setOrder(emptyOrder);
@@ -261,7 +255,7 @@ const AcceptOrder = () => {
     const findIndexById = (id) => {
         let index = -1;
         for (let i = 0; i < cart.length; i++) {
-            if (cart[i].ID === id) {
+            if (cart[i].id === id) {
                 index = i;
                 break;
             }
@@ -292,7 +286,7 @@ const AcceptOrder = () => {
         console.log(selectedOrders);
         const orderService = new OrderService();
         for (var i in selectedOrders) {
-            orderService.deleteOrder(selectedOrders[i].ID);
+            orderService.deleteOrder(selectedOrders[i].id);
         }
 
         let _orders = orders.filter((val) => !selectedOrders.includes(val));
@@ -425,7 +419,7 @@ const AcceptOrder = () => {
         return (
             <>
                 <span className="p-column-title">Mã món</span>
-                {rowData.ID}
+                {rowData.id}
             </>
         );
     };
@@ -436,7 +430,7 @@ const AcceptOrder = () => {
         return (
             <>
                 <span className="p-column-title">Tên món</span>
-                {rowData.Name}
+                {rowData.food.name}
             </>
         );
     };
@@ -447,7 +441,7 @@ const AcceptOrder = () => {
                 <span className="p-column-title">Hình ảnh</span>
                 <img
                     src={`http://localhost:1486/Content/food/` + rowData.Alias + `_1.jpg`}
-                    alt={rowData.Image}
+                    alt={rowData.food.image}
                     className="shadow-2"
                     width="100"
                 />
@@ -459,7 +453,7 @@ const AcceptOrder = () => {
         return (
             <>
                 <span className="p-column-title">Giá gốc</span>
-                {rowData.OriginPrice}
+                {rowData.food.originPrice}
             </>
         );
     };
@@ -467,7 +461,7 @@ const AcceptOrder = () => {
         return (
             <>
                 <span className="p-column-title">Giá khuyến mãi</span>
-                {rowData.PromotionPrice}
+                {rowData.food.promotionPrice}
             </>
         );
     };
@@ -475,7 +469,7 @@ const AcceptOrder = () => {
         return (
             <>
                 <span className="p-column-title">Số lượng</span>
-                {rowData.Quantity}
+                {rowData.quantity}
             </>
         );
     };
@@ -595,13 +589,13 @@ const AcceptOrder = () => {
                         
                     >
                         <div className="field">
-                            <label htmlFor="ID">Mã đơn hàng: {order.ID} </label>
+                            <label htmlFor="ID">Mã đơn hàng: {order.id} </label>
                             
                         </div>
 
                         <div className="field">
                             <label htmlFor="FullName">Tên Khách hàng:   </label>
-                            {order.FullName}
+                            {order.customerName}
                         </div>
 
                         <div className="field">{render()}</div>
@@ -624,7 +618,7 @@ const AcceptOrder = () => {
                             />
                             {order && (
                                 <span>
-                                    Bạn muốn xóa order này?<b>{order.Name}</b>?
+                                    Bạn muốn xóa order này?<b>{order.name}</b>?
                                 </span>
                             )}
                         </div>

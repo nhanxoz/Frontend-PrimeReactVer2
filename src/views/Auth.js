@@ -18,7 +18,8 @@ const Auth = ({ authRoute }) => {
         <Spinner animation="border" variant="info" />
       </div>
     );
-  else if (isAuthenticated) return <Redirect to="/crud" />;
+  else 
+if (isAuthenticated) return <Redirect to="/crud" />;
   else
     body = (
       <>

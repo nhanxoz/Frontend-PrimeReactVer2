@@ -1,40 +1,40 @@
 import axios from "axios";
+import { access_token } from "../contexts/constants";
 
 export class FoodCategoryService {
   getFoodCategory() {
-    axios.defaults.withCredentials = true;
+        
 
     return axios
-      .get("http://localhost:1486/api/admin/categoryfood", { withCredentials: true })
+      .get("http://localhost:8080/api/admin/categoryfood",   {  headers: {
+        'Authorization': `Bearer ${access_token}`
+      }} )
       .then((res) => res.data.data);
   }
   
   deleteFoodCategory(id) {
-    axios.defaults.withCredentials = true;
-    const urlDelete = `http://localhost:1486/api/admin/categoryfood?id=` + String(id);
+        
+    const urlDelete = `http://localhost:8080/api/admin/categoryfood/` + String(id);
 
-    return axios.delete(urlDelete);
+    return axios.delete(urlDelete,{  headers: {
+      'Authorization': `Bearer ${access_token}`
+    }});
   }
   saveFoodCategory(categoryfood) {
-    axios.defaults.withCredentials = true;
-    return axios.post("http://localhost:1486/api/admin/categoryfood", categoryfood, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true,
-    });
+        
+    return axios.post("http://localhost:8080/api/admin/categoryfood", categoryfood,{  headers: {
+      'Authorization': `Bearer ${access_token}`
+    }});
   }
 
   updateFoodCategory(categoryfood) {
-    axios.defaults.withCredentials = true;
-    return axios.put("http://localhost:1486/api/admin/categoryfood", categoryfood, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+        
+    return axios.put("http://localhost:8080/api/admin/categoryfood", categoryfood, {  headers: {
+      'Authorization': `Bearer ${access_token}`
+    }});
   }
   uploadImageFood(event) {
-    axios.defaults.withCredentials = true;
+        
     let formData = new FormData();
     formData.append("file", event);
 

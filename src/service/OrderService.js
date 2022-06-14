@@ -1,55 +1,68 @@
 import axios from "axios";
-
+import { access_token } from "../contexts/constants";
 export class OrderService {
   getOrder() {
-    axios.defaults.withCredentials = true;
+
 
     return axios
-      .get("http://localhost:1486/api/Order", { withCredentials: true })
+      .get("http://localhost:8080/api/Order", {
+        headers: {
+          'Authorization': `Bearer ${access_token}`
+        }
+      })
       .then((res) => res.data.data);
   }
-  
-  deleteOrder(id) {
-    axios.defaults.withCredentials = true;
-    const urlDelete = `http://localhost:1486/api/admin/order?id=` + String(id);
 
-    return axios.delete(urlDelete);
+  deleteOrder(id) {
+
+    const urlDelete = `http://localhost:8080/api/admin/order?id=` + String(id);
+
+    return axios.delete(urlDelete, {
+      headers: {
+        'Authorization': `Bearer ${access_token}`
+      }
+    });
   }
   saveOrder(order) {
-    axios.defaults.withCredentials = true;
-    return axios.post("http://localhost:1486/api/admin/editorder", order, {
+
+    return axios.post("http://localhost:8080/api/admin/editorder", order, {
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${access_token}`
       },
       withCredentials: true,
     });
   }
 
   updateOrder(order) {
-    axios.defaults.withCredentials = true;
-    return axios.put("http://localhost:1486/api/admin/order", order, {
+
+    return axios.put("http://localhost:8080/api/admin/order", order, {
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${access_token}`
       },
     });
   }
-  EditStatus(ID, stt) {
-    axios.defaults.withCredentials = true;
-    const urlEdit = `http://localhost:1486/api/admin/editstatus?ID=` + String(ID) +`&stt=` + String(stt);
+  EditStatus(stt, ID) {
 
-    return axios.put(urlEdit);
+    const urlEdit = `http://localhost:8080/apiFood/orders?status=` + String(stt) + `&id=` + String(ID);
+    console.log(urlEdit)
+    return axios
+    .put(urlEdit,urlEdit ,{
+      headers: {
+        'Authorization': `Bearer ${access_token}`
+      }
+    });
 
   }
 
   uploadImageFood(event) {
-    axios.defaults.withCredentials = true;
     let formData = new FormData();
     formData.append("file", event);
-
     return axios
       .post("http://localhost:8080/uploadFile", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${access_token}`
         },
       })
       .then((res) => {

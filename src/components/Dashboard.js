@@ -12,12 +12,12 @@ const Dashboard = (props) => {
     const [sales, setSales] = useState(null);
     const [saling, setSaling] = useState([{id: 0, name:'', c:0}]);
     const [order, setOrder] = useState([{allorder: 0, neworder: 0}]);
-    const [revenue, setRevenue] = useState([{Inmonth: 0, Lastmonth: 0}]);
-    const [customer, setCustomer] = useState([{Customer: 0, NewRegister: 0}]);
+    const [revenue, setRevenue] = useState([{inmonth: 0, lastmonth: 0}]);
+    const [customer, setCustomer] = useState([{customer: 0, newRegister: 0}]);
     const [chart, setChart] = useState([{thang:3}]);
     const [arrngay, setArrngay] = useState(null);
     const [arrtong, setArrtong] = useState(null);
-    const [cart, setCart]=useState([{ID: 0, FullName:'', Status:0}]);
+    const [cart, setCart]=useState([{id: 0, customerName:'', status:0}]);
     const [food, setFood] = useState(null);
     const menu1 = useRef(null);
     const menu2 = useRef(null);
@@ -28,6 +28,7 @@ const Dashboard = (props) => {
         const dashboardService = new DashboardService(); console.log("test");
         dashboardService.getSales().then((data) => {
             setSales(data);
+            console.log(sales);
         })
         dashboardService.getSellings().then((data) => {
             setSaling(data);
@@ -73,20 +74,13 @@ const Dashboard = (props) => {
         }
         
         return arrtong
-        // formatDate().forEach(myFunction);
-        // function myFunction(item, index)
-        // {
-        //     if(index + 1==item.ngay)
-        //     arrtong[index]=item.tong;
-        //     else arrtong[index]=0;
-        // }
+        
         
     }
-    //const arrtong = chart.reduce((prev, no) => [...prev, no.tong], [])
     console.log('arr')
-    console.log(chart)
-    console.log(formatRevenue())
-    console.log(chart[0].thang)
+    console.log('char'+chart)
+    console.log('revenue'+formatRevenue())
+    console.log('thang'+chart[0].thang)
    console.log(getDays(2022,chart[0].thang))
     const lineData = {
         
@@ -229,9 +223,9 @@ const Dashboard = (props) => {
                 <div className="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
                     <i className="pi pi-dollar text-xl text-blue-500"/>
                 </div>
-                <span className="text-900 line-height-3">Mã đơn hàng: {item.ID}
+                <span className="text-900 line-height-3">Mã đơn hàng: {item.id}
                 
-            <span className="text-2000"> Tên khách hàng: {item.FullName} </span><span className="text-blue-500">Trạng thái: {formatStatus(item.Status)}</span></span>
+            <span className="text-2000"> Tên khách hàng: {item.customerName} </span><span className="text-blue-500">Trạng thái: {formatStatus(item.status)}</span></span>
             
             </li>
         })
@@ -242,7 +236,7 @@ const Dashboard = (props) => {
             <span className="p-column-title">Ảnh</span>
     
             <img
-              src={`http://localhost:1486/Content/food/` + rowData.Alias + `_1.jpg`}
+              src={`http://localhost:8080/Content/food/` + rowData.Alias + `_1.jpg`}
               alt={rowData.Alias}
               className="shadow-2"
               width="100"
@@ -273,13 +267,13 @@ const Dashboard = (props) => {
                     <div className="flex justify-content-between mb-3">
                         <div>
                             <span className="block text-500 font-medium mb-3">Revenue in month</span>
-                            <div className="text-900 font-medium text-xl">{revenue[0].Inmonth} VND </div>
+                            <div className="text-900 font-medium text-xl">{revenue[0].inmonth} VND </div>
                         </div>
                         <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
                             <i className="pi pi-map-marker text-orange-500 text-xl"/>
                         </div>
                     </div>
-                    <span className="text-green-500 font-medium">{revenue[0].Lastmonth} VND </span>
+                    <span className="text-green-500 font-medium">{revenue[0].lastmonth} VND </span>
                     <span className="text-500">Last month</span>
                 </div>
             </div>
@@ -288,13 +282,13 @@ const Dashboard = (props) => {
                     <div className="flex justify-content-between mb-3">
                         <div>
                             <span className="block text-500 font-medium mb-3">Customers</span>
-                            <div className="text-900 font-medium text-xl">{customer[0].Customer}</div>
+                            <div className="text-900 font-medium text-xl">{customer[0].customer}</div>
                         </div>
                         <div className="flex align-items-center justify-content-center bg-cyan-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
                             <i className="pi pi-inbox text-cyan-500 text-xl"/>
                         </div>
                     </div>
-                    <span className="text-green-500 font-medium">{customer[0].NewRegister} </span>
+                    <span className="text-green-500 font-medium">{customer[0].newRegister} </span>
                     <span className="text-500">newly registered</span>
                 </div>
             </div>
@@ -309,9 +303,9 @@ const Dashboard = (props) => {
               body={imageBodyTemplate}
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
-                        <Column field="Name" header="Name" sortable style={{width: '35%'}}/>
-                        <Column field="OriginPrice" header="OriginPrice" sortable style={{width: '35%'}} />
-                        <Column field="PromotionPrice" header="PromotionPrice" style={{width:'15%'}} />
+                        <Column field="name" header="Name" sortable style={{width: '35%'}}/>
+                        <Column field="originPrice" header="OriginPrice" sortable style={{width: '35%'}} />
+                        <Column field="promotionPrice" header="PromotionPrice" style={{width:'15%'}} />
                     </DataTable>
                 </div>
                 <div className="card">
@@ -352,18 +346,7 @@ const Dashboard = (props) => {
 
                   
                 </div>
-                <div className="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3"
-                     style={{borderRadius: '1rem', background: 'linear-gradient(0deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.5)), linear-gradient(92.54deg, #1C80CF 47.88%, #FFFFFF 100.01%)'}}>
-                    <div>
-                        <div className="text-blue-100 font-medium text-xl mt-2 mb-3">TAKE THE NEXT STEP</div>
-                        <div className="text-white font-medium text-5xl">Try PrimeBlocks</div>
-                    </div>
-                    <div className="mt-4 mr-auto md:mt-0 md:mr-0">
-                        <a href="https://www.primefaces.org/primeblocks-react" className="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised">
-                            Get Started
-                        </a>
-                    </div>
-                </div>
+               
             </div>
         </div>
     );

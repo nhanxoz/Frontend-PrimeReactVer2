@@ -10,7 +10,7 @@ import { useContext } from 'react'
 const NavbarMenu = () => {
 	const {
 		authState: {
-			user: { username }
+			user: username 
 		},
 		logoutUser
 	} = useContext(AuthContext)

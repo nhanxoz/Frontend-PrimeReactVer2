@@ -9,6 +9,7 @@ import PostContextProvider from "./contexts/PostContext";
 import Main from "./Main";
 import EmptyPage from './pages/EmptyPage';
 function App() {
+
   return (
     <AuthContextProvider>
       <PostContextProvider>

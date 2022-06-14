@@ -17,12 +17,10 @@ import { ProductService } from "../service/ProductService";
 
 const Promotion = () => {
   let emptyPromotion = {
-    ID: null,
-    Name: "",
-    Description: "",
-    ActiveDay: "",
-    EndDay:"",
-    FoodID: null
+    id: null,
+    name: "",
+    percentOff:0,
+    
   };
  
   const [promotions, setPromotions] = useState(null);
@@ -78,11 +76,11 @@ const Promotion = () => {
   const savePromotion = () => {
     setSubmitted(true);
 
-    if (promotion.Name.trim()) {
+    if (promotion.name.trim()) {
       let _promotions = [...promotions];
       let _promotion = { ...promotion };
-      if (promotion.ID) {
-        const index = findIndexById(promotion.ID);
+      if (promotion.id) {
+        const index = findIndexById(promotion.id);
 
         _promotions[index] = _promotion;
         const promotionService = new PromotionService();
@@ -94,7 +92,7 @@ const Promotion = () => {
           life: 3000,
         });
       } else {
-        _promotion.ID = promotions.reduce((a, b) => Math.max(a, b.ID), 0) + 1;
+        _promotion.id = promotions.reduce((a, b) => Math.max(a, b.id), 0) + 1;
         _promotions.push(_promotion);
         const promotionService = new PromotionService();
         promotionService.savePromotion(_promotion);
@@ -144,7 +142,7 @@ const Promotion = () => {
   const findIndexById = (id) => {
     let index = -1;
     for (let i = 0; i < promotions.length; i++) {
-      if (promotions[i].ID === id) {
+      if (promotions[i].id === id) {
         index = i;
         break;
       }
@@ -276,7 +274,7 @@ const Promotion = () => {
     return (
       <>
         <span className="p-column-title">ID</span>
-        {rowData.ID}
+        {rowData.id}
       </>
     );
   };
@@ -285,7 +283,7 @@ const Promotion = () => {
     return (
       <>
         <span className="p-column-title">Name</span>
-        {rowData.Name}
+        {rowData.name}
       </>
     );
   };
@@ -308,8 +306,8 @@ const Promotion = () => {
   const descriptionBodyTemplate = (rowData) => {
     return (
       <>
-        <span className="p-column-title">Mô tả</span>
-        {rowData.Description}
+        <span className="p-column-title">percentOff</span>
+        {rowData.percentOff}
       </>
     );
   };
@@ -431,7 +429,7 @@ const Promotion = () => {
             value={promotions}
             selection={selectedPromotions}
             onSelectionChange={(e) => setSelectedPromotions(e.value)}
-            dataKey="ID"
+            dataKey="id"
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
@@ -448,14 +446,14 @@ const Promotion = () => {
               headerStyle={{ width: "3rem" }}
             ></Column>
             <Column
-              field="ID"
+              field="id"
               header="ID"
               sortable
               body={IDBodyTemplate}
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
            <Column
-              field="Name"
+              field="name"
               header="Tên mã"
               sortable
               body={nameBodyTemplate}
@@ -463,27 +461,14 @@ const Promotion = () => {
             ></Column>
             
             <Column
-              field="Description"
-              header="Mô tả"
+              field="percentOff"
+              header="PercentOff"
               body={descriptionBodyTemplate}
               
               headerStyle={{ width: "14%", minWidth: "10rem" }}
             ></Column>
             
-            <Column
-              field="ActiveDay"
-              header="Ngày bắt đầu"
-              body={activedayBodyTemplate}
-              sortable
-              headerStyle={{ width: "14%", minWidth: "8rem" }}
-            ></Column>
-            <Column
-              field="EndDay"
-              header="Ngày kết thúc"
-              body={enddayBodyTemplate}
-              sortable
-              headerStyle={{ width: "14%", minWidth: "8rem" }}
-            ></Column>
+            
             <Column body={actionBodyTemplate}></Column>
           </DataTable>
 
@@ -532,6 +517,7 @@ const Promotion = () => {
                 <label htmlFor="activeday">Ngày bắt đầu</label>
                 <InputNumber
                   id="activeday"
+                  type="date"
                   value={promotion.ActiveDay}
                   onValueChange={(e) =>
                     onInputNumberChange(e, "Activeday")
