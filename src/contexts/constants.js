@@ -11,5 +11,5 @@ export const ADD_POST = 'ADD_POST'
 export const DELETE_POST = 'DELETE_POST'
 export const UPDATE_POST = 'UPDATE_POST'
 export const FIND_POST = 'FIND_POST'
-export const access_token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJuaGFuIiwiaWF0IjoxNjU1MTA5ODM4LCJleHAiOjE2NTUxOTYyMzh9.b0zFKJ8eXya-5feb5ILPt4tCEMC17yiRW3ryXiNHtuGpAvoY0iZRHg8qOG3NWlUVytvUdKKaxB1xcjVd0xa2mA'
+export const access_token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJuaGFuIiwiaWF0IjoxNjU1MzAyNTAyLCJleHAiOjE2NTUzODg5MDJ9.U0uCk2MwEONm5np7RiRZLZ_QBa9hFUr24MxLm3O23l8YBZc9bGKh_NJzSMl9EWQASFC9sXqArNfezPOBEn1tQQ'
 

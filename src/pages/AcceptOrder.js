@@ -17,12 +17,12 @@ import { DashboardService } from "../service/DashboardService";
 
 const AcceptOrder = () => {
     let emptyOrder = {
-        id: 0, customerName: '', status: 0, 
-        order_food: [{quantity:0,food:{ name: '', image: '', originPrice: 0, promotionPrice: 0, alias: ''}}]
+        id: 0, customerName: '', status: 0,
+        order_food: [{ quantity: 0, food: { name: '', image: '', originPrice: 0, promotionPrice: 0, alias: '' } }]
 
     };
     //const [orders, setOrders] = useState([]);
-    const [cart, setCart] = useState([{ id: 0, customerName: '', status: 0,  order_food: [{quantity:0,food:{ name: '', image: '', originPrice: 0, promotionPrice: 0, alias: ''}}] }]);
+    const [cart, setCart] = useState([{ id: 0, customerName: '', status: 0, order_food: [{ quantity: 0, food: { name: '', image: '', originPrice: 0, promotionPrice: 0, alias: '' } }] }]);
 
     const [orders, setOrders] = useState(null);
     const [orderDialog, setOrderDialog] = useState(false);
@@ -45,7 +45,7 @@ const AcceptOrder = () => {
 
     }, []);
     console.log(cart);
-    
+
 
     const formatCurrency = (value) => {
         if (value == 0) return String("Chờ duyệt");
@@ -118,7 +118,7 @@ const AcceptOrder = () => {
                 header={header}
                 responsiveLayout="scroll"
             >
-               
+
                 <Column
                     selectionMode="multiple"
                     headerStyle={{ width: "3rem" }}
@@ -128,13 +128,11 @@ const AcceptOrder = () => {
                     header="Tên món"
                     sortable
                     body={NameBodyTemplate}
-                    headerStyle={{ width: "7%", minWidth: "7rem" }}
+                    headerStyle={{ width: "14%", minWidth: "10rem" }}
                 ></Column>
                 <Column
-                    field="Image"
                     header="Hình ảnh"
-                    body={ImageBodyTemplate}
-
+                    body={imageBodyTemplate}
                     headerStyle={{ width: "14%", minWidth: "10rem" }}
                 ></Column>
                 <Column
@@ -161,7 +159,7 @@ const AcceptOrder = () => {
 
 
             </DataTable>
-        </div>      
+        </div>
     }
 
     const renderBody = () => {
@@ -196,39 +194,39 @@ const AcceptOrder = () => {
 
     const saveOrder = () => {
         setSubmitted(true);
-    
-       
+
+
         //   let _orders = [...orders];
-           let _order = { ...order };
-           const index = findIndexById(_order.id);
-           let _cart = {...cart};
-           _cart[index].status=_order.status;
-           
-           console.log(_order);
-            const orderService = new OrderService();
-            orderService.EditStatus(_order.status,_order.id);
-            toast.current.show({
-              severity: "success",
-              summary: "Successful",
-              detail: "order Updated",
-              life: 3000,
-            });
-          
-    
-          setOrder(_order);
-          setOrderDialog(false);
-          setOrder(emptyOrder);
-          //setCart(_cart);
-          
-        }
-     
-    
-      const editOrder = (item) => {
-          console.log(item);
+        let _order = { ...order };
+        const index = findIndexById(_order.id);
+        let _cart = { ...cart };
+        _cart[index].status = _order.status;
+
+        console.log(_order);
+        const orderService = new OrderService();
+        orderService.EditStatus(_order.status, _order.id);
+        toast.current.show({
+            severity: "success",
+            summary: "Successful",
+            detail: "order Updated",
+            life: 3000,
+        });
+
+
+        setOrder(_order);
+        setOrderDialog(false);
+        setOrder(emptyOrder);
+        //setCart(_cart);
+
+    }
+
+
+    const editOrder = (item) => {
+        console.log(item);
         setOrder(item);
         console.log(order);
         setOrderDialog(true);
-      };
+    };
 
     const confirmDeleteOrder = (order) => {
         setOrder(order);
@@ -334,25 +332,26 @@ const AcceptOrder = () => {
             <React.Fragment>
                 <div className="my-2">
 
-                    <Button
+                    {/* <Button
                         label="Xóa"
                         icon="pi pi-trash"
                         className="p-button-danger"
                         onClick={confirmDeleteSelected}
                         disabled={!selectedOrders || !selectedOrders.length}
-                    />
+                    /> */}
                 </div>
             </React.Fragment>
         );
     };
     const [stt, setStt] = useState();
-    const FilterByStt = (event)=>{
+    const FilterByStt = (event) => {
         const stt = event.target.value;
         setStt(stt);
         console.log(stt);
         const dashboardService = new DashboardService();
         dashboardService.getfilter(stt).then((data) => {
-            setCart(data)});
+            setCart(data)
+        });
 
     }
     const rightToolbarTemplate = () => {
@@ -366,7 +365,7 @@ const AcceptOrder = () => {
                         <option value="2">Đã giao</option>
                         <option value="3">Đã huỷ</option>
                     </select>
-                    
+
                 </div>
                 {/* <Button
                     label="Xuất file Excel"
@@ -435,12 +434,13 @@ const AcceptOrder = () => {
         );
     };
 
-    const ImageBodyTemplate = (rowData) => {
+    const imageBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Hình ảnh</span>
+                <span className="p-column-title">Image</span>
+
                 <img
-                    src={`http://localhost:1486/Content/food/` + rowData.Alias + `_1.jpg`}
+                    src={`http://localhost:8080/downloadFile/` + rowData.food.image}
                     alt={rowData.food.image}
                     className="shadow-2"
                     width="100"
@@ -516,7 +516,7 @@ const AcceptOrder = () => {
         </div>
     );
 
-    const orderDialogFooter =(
+    const orderDialogFooter = (
         <>
             <Button
                 label="Cancel"
@@ -586,11 +586,11 @@ const AcceptOrder = () => {
                         className="p-fluid"
                         footer={orderDialogFooter}
                         onHide={hideDialog}
-                        
+
                     >
                         <div className="field">
                             <label htmlFor="ID">Mã đơn hàng: {order.id} </label>
-                            
+
                         </div>
 
                         <div className="field">

@@ -233,11 +233,11 @@ const Dashboard = (props) => {
     const imageBodyTemplate = (rowData) => {
         return (
           <>
-            <span className="p-column-title">Ảnh</span>
+            <span className="p-column-title">Image</span>
     
             <img
-              src={`http://localhost:8080/Content/food/` + rowData.Alias + `_1.jpg`}
-              alt={rowData.Alias}
+              src={`http://localhost:8080/downloadFile/` + rowData.alias + `_1.jpg`}
+              alt={rowData.alias}
               className="shadow-2"
               width="100"
             />

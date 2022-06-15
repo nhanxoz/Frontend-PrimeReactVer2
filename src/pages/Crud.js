@@ -701,7 +701,7 @@ const Crud = () => {
                 className="pi pi-exclamation-triangle mr-3"
                 style={{ fontSize: "2rem" }}
               />
-              {product && <span>Bạn muốn xóa tất cả món ăn đã chọn khum?</span>}
+              {product && <span>Bạn muốn xóa tất cả món ăn đã chọn?</span>}
             </div>
           </Dialog>
         </div>

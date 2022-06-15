@@ -475,7 +475,7 @@ const Promotion = () => {
           <Dialog
             visible={promotionDialog}
             style={{ width: "450px" }}
-            header="Chi tiết món"
+            header="Chi tiết mã"
             modal
             className="p-fluid"
             footer={promotionDialogFooter}
@@ -486,28 +486,29 @@ const Promotion = () => {
               <label htmlFor="name">Tên mã</label>
               <InputText
                 id="name"
-                value={promotion.Name}
+                value={promotion.name}
                 onChange={(e) => onInputChange(e, "Name")}
                 required
                 autoFocus
                 className={classNames({
-                  "p-invalid": submitted && !promotion.Name,
+                  "p-invalid": submitted && !promotion.name,
                 })}
               />
-              {submitted && !promotion.Name && (
+              {submitted && !promotion.name && (
                 <small className="p-invalid">Yêu cầu nhập tên mã</small>
               )}
             </div>
             <div className="field">
-              <label htmlFor="description">Mô tả</label>
+              <label htmlFor="description">Phần trăm giảm giá(%)</label>
               <InputTextarea
                 id="description"
-                value={promotion.Description}
-                onChange={(e) => onInputChange(e, "Description")}
+                value={promotion.percentOff}
+                onChange={(e) => onInputChange(e, "percentOff")}
                 required
                 rows={3}
                 cols={20}
               />
+              
             </div>
             
             
