@@ -18,10 +18,9 @@ const AuthContextProvider = ({ children }) => {
     if (localStorage[LOCAL_STORAGE_TOKEN_NAME]) {
       setAuthToken(localStorage[LOCAL_STORAGE_TOKEN_NAME]);
     }
-    console.log("user", username)
+    console.log("user", accessToken, username);
     try {
-      
-      if (accessToken!==null) {
+      if (accessToken !== undefined) {
         dispatch({
           type: "SET_AUTH",
           payload: { isAuthenticated: true, username },
@@ -33,7 +32,7 @@ const AuthContextProvider = ({ children }) => {
       setAuthToken(null);
       dispatch({
         type: "SET_AUTH",
-        payload: { isAuthenticated: false, user: "Nhan"},
+        payload: { isAuthenticated: false, user: "Nhan" },
       });
     }
   };

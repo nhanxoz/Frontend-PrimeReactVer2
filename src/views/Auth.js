@@ -6,20 +6,13 @@ import { Redirect } from 'react-router-dom'
 import Spinner from 'react-bootstrap/Spinner'
 
 const Auth = ({ authRoute }) => {
-	const {
-		authState: { authLoading, isAuthenticated }
-	} = useContext(AuthContext)
+  const {
+    authState: { authLoading, isAuthenticated },
+  } = useContext(AuthContext);
 
-	let body
+  let body;
 
-	if (authLoading)
-    body = (
-      <div className="d-flex justify-content-center mt-2">
-        <Spinner animation="border" variant="info" />
-      </div>
-    );
-  else 
-if (isAuthenticated) return <Redirect to="/crud" />;
+  if (isAuthenticated) return <Redirect to="/crud" />;
   else
     body = (
       <>
@@ -28,17 +21,17 @@ if (isAuthenticated) return <Redirect to="/crud" />;
       </>
     );
 
-	return (
-		<div className='landing'>
-			<div className='dark-overlay'>
-				<div className='landing-inner'>
-					<h1>LearnIt</h1>
-					<h4>Keep track of what you are learning</h4>
-					{body}
-				</div>
-			</div>
-		</div>
-	)
+  return (
+    <div className="landing">
+      <div className="dark-overlay">
+        <div className="landing-inner">
+          <h1>LearnIt</h1>
+          <h4>Keep track of what you are learning</h4>
+          {body}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Auth
